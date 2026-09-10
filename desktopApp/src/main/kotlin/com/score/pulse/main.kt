@@ -7,6 +7,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import com.score.pulse.core.App
 
 fun main(args: Array<String>) = application {
     val width = args.getOrNull(0)?.toIntOrNull() ?: 1080
