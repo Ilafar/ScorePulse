@@ -11,9 +11,14 @@ data class HomeState(
     val editingPlayerId: String? = null,
     val isLockRoundConfirmationVisible: Boolean = false,
     val isGameResultVisible: Boolean = false,
-    val isStartGameDialogVisible: Boolean = true,
+    val isStartGameDialogVisible: Boolean = false,
 ) : UiState {
     val isFinalRound: Boolean get() = currentRound >= game.maxRounds
-    val roundLabel: String get() = "Round $currentRound/${game.maxRounds}"
+    val hasMinimumPlayers: Boolean get() = players.size >= 2
+    val roundLabel: String
+        get() = if (
+            game.maxRounds != 0
+        ) "Round $currentRound/${game.maxRounds}"
+        else ""
     val editingPlayer: Player? get() = players.firstOrNull { it.id == editingPlayerId }
 }

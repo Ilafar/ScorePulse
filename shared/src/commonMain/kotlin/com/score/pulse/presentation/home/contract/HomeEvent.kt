@@ -4,17 +4,17 @@ import com.greentasty.core.base.UiEvent
 
 sealed class HomeEvent : UiEvent {
 
-    //ValueChange
-    data class GameNameValueChange(val gameName: String) : HomeEvent()
-    data class TotalRoundsValueChange(val totalRounds: String) : HomeEvent()
+    //Open
+    data object OpenStartGameDialog : HomeEvent()
+    data object OpenLockRoundDialog : HomeEvent()
+    data object OpenGameResultDialog : HomeEvent()
+    data class OpenEditScoreDialog(val playerId: String) : HomeEvent()
 
     //Click
-    data object NewGameClicked : HomeEvent()
-    data class EditScoreClicked(val playerId: String) : HomeEvent()
     data class AdjustScoreClicked(val playerId: String, val delta: Int) : HomeEvent()
+    data class StartNewGameClicked(val gameName: String, val totalRounds: Int) : HomeEvent()
     data object ConfirmLockRoundClicked : HomeEvent()
-    data object FinishMatchClicked : HomeEvent()
-    data object LockRoundClicked : HomeEvent()
+    data object AddPlayerClicked : HomeEvent()
 
     //Dismiss
     data object DismissEdit : HomeEvent()

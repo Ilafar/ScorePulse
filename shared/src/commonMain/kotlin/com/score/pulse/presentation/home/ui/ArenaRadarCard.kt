@@ -2,6 +2,7 @@ package com.score.pulse.presentation.home.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +40,6 @@ import com.score.pulse.domain.model.Player
 import com.score.pulse.domain.model.PlayerEmblem
 import com.score.pulse.domain.model.containerColor
 
-/** The circular 4-player "nexus" arena visual with a tappable center VS badge. */
 @Composable
 fun ArenaRadarCard(
     gameTitle: String,
@@ -85,16 +86,16 @@ fun ArenaRadarCard(
             ) {
                 ArenaRings(players)
 
-                players.getOrNull(0)?.let { ArenaPlayerNode(it, Modifier.align(Alignment.TopCenter)) }
-                players.getOrNull(1)?.let { ArenaPlayerNode(it, Modifier.align(Alignment.CenterEnd)) }
-                players.getOrNull(2)?.let { ArenaPlayerNode(it, Modifier.align(Alignment.BottomCenter)) }
-                players.getOrNull(3)?.let { ArenaPlayerNode(it, Modifier.align(Alignment.CenterStart)) }
+                ArenaSlot(players.getOrNull(0), Modifier.align(Alignment.TopCenter))
+                ArenaSlot(players.getOrNull(1), Modifier.align(Alignment.CenterEnd))
+                ArenaSlot(players.getOrNull(2), Modifier.align(Alignment.BottomCenter))
+                ArenaSlot(players.getOrNull(3), Modifier.align(Alignment.CenterStart))
 
                 ArenaVsBadge(onClick = onCenterTap)
             }
 
             Text(
-                text = "Tap center VS to trigger quick clash recalculation",
+                text = "Tap center VS to start a new game",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -180,7 +181,7 @@ private fun ArenaVsBadge(onClick: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
                 imageVector = Icons.Filled.Bolt,
-                contentDescription = "Recalculate",
+                contentDescription = "Start new game",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(26.dp),
             )
@@ -190,6 +191,42 @@ private fun ArenaVsBadge(onClick: () -> Unit) {
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
+    }
+}
+
+@Composable
+private fun ArenaSlot(player: Player?, modifier: Modifier = Modifier) {
+    if (player != null) {
+        ArenaPlayerNode(player, modifier)
+    } else {
+        ArenaEmptySlotNode(modifier)
+    }
+}
+
+@Composable
+private fun ArenaEmptySlotNode(modifier: Modifier = Modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.surfaceContainer)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.QuestionMark,
+                contentDescription = "Empty player slot",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+        Text(
+            text = "Open",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 
@@ -237,6 +274,22 @@ private fun ArenaRadarCardPreview() {
                 Player("p2", "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan, score = 118),
                 Player("p3", "Marcus \"Rex\"", PlayerEmblem.Phoenix, AccentColor.Magenta, score = 95),
                 Player("p4", "Elena \"Pulse\"", PlayerEmblem.Shield, AccentColor.Violet, score = 86),
+            ),
+            onCenterTap = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ArenaRadarCardEmptySlotsPreview() {
+    ScorePulseTheme {
+        ArenaRadarCard(
+            gameTitle = "Cyberclash Shutdown",
+            roundLabel = "Round 1/5",
+            players = listOf(
+                Player("p1", "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald, score = 0),
+                Player("p2", "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan, score = 0),
             ),
             onCenterTap = {},
         )

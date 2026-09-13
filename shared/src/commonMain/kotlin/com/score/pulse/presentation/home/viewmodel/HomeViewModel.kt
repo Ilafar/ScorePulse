@@ -1,58 +1,17 @@
 package com.score.pulse.presentation.home.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import com.score.pulse.core.base.BaseViewModel
-import com.score.pulse.domain.model.AccentColor
+import com.score.pulse.core.snackbar.SnackbarController
+import com.score.pulse.core.snackbar.SnackbarEvent
 import com.score.pulse.domain.model.Game
 import com.score.pulse.domain.model.Player
-import com.score.pulse.domain.model.PlayerEmblem
 import com.score.pulse.presentation.home.contract.HomeEffect
 import com.score.pulse.presentation.home.contract.HomeEvent
 import com.score.pulse.presentation.home.contract.HomeState
+import kotlinx.coroutines.launch
 
 class HomeViewModel : BaseViewModel<HomeEvent, HomeState, HomeEffect>() {
-
-    // TODO: Remove this when implemented repos
-    init {
-        setState {
-            copy(
-                game = Game(
-                    name = "UNO Dark",
-                    maxRounds = 4
-                ),
-                players = listOf(
-                    Player(
-                        "p1",
-                        "Alex",
-                        PlayerEmblem.Gamepad,
-                        AccentColor.Emerald,
-                        score = 142
-                    ),
-                    Player(
-                        "p2",
-                        "Sarah",
-                        PlayerEmblem.Thunder,
-                        AccentColor.Cyan,
-                        score = 118
-                    ),
-                    Player(
-                        "p3",
-                        "Marcus",
-                        PlayerEmblem.Phoenix,
-                        AccentColor.Magenta,
-                        score = 95
-                    ),
-                    Player(
-                        "p4",
-                        "Elena",
-                        PlayerEmblem.Shield,
-                        AccentColor.Violet,
-                        score = 86
-                    ),
-                ),
-                currentRound = 1
-            )
-        }
-    }
 
     override fun createInitialState(): HomeState = HomeState()
 
@@ -70,75 +29,75 @@ class HomeViewModel : BaseViewModel<HomeEvent, HomeState, HomeEffect>() {
                 }
             }
 
-            is HomeEvent.EditScoreClicked -> {
-                setState {
-                    copy(editingPlayerId = event.playerId)
-                }
+            is HomeEvent.OpenEditScoreDialog -> {
+                setState { copy(editingPlayerId = event.playerId) }
             }
 
             HomeEvent.DismissEdit -> {
-                setState {
-                    copy(editingPlayerId = null)
-                }
+                setState { copy(editingPlayerId = null) }
             }
 
-            HomeEvent.FinishMatchClicked -> {
-                setState {
-                    copy(isGameResultVisible = true)
-                }
+            HomeEvent.OpenGameResultDialog -> {
+                setState { copy(isGameResultVisible = true) }
             }
 
-            HomeEvent.LockRoundClicked -> {
-                setState {
-                    copy(isLockRoundConfirmationVisible = true)
-                }
+            HomeEvent.OpenLockRoundDialog -> {
+                setState { copy(isLockRoundConfirmationVisible = true) }
             }
 
             HomeEvent.ConfirmLockRoundClicked -> {
-                setState {
-                    copy(isLockRoundConfirmationVisible = false)
-                }
+                setState { copy(isLockRoundConfirmationVisible = false) }
             }
 
             HomeEvent.DismissLockRound -> {
-                setState {
-                    copy(isLockRoundConfirmationVisible = false)
+                setState { copy(isLockRoundConfirmationVisible = false) }
+            }
+
+            HomeEvent.OpenStartGameDialog -> {
+                if (currentState.hasMinimumPlayers) {
+                    setState {
+                        copy(
+                            isGameResultVisible = false,
+                            isStartGameDialogVisible = true
+                        )
+                    }
+                } else {
+                    sendSnackbar("Minimum 2 players required")
                 }
             }
 
-            HomeEvent.NewGameClicked -> {
+            HomeEvent.DismissStartGame -> {
+                setState { copy(isStartGameDialogVisible = false) }
+            }
+
+            is HomeEvent.StartNewGameClicked -> {
                 setState {
                     copy(
+                        isStartGameDialogVisible = false,
+                        game = Game(
+                            name = event.gameName,
+                            maxRounds = event.totalRounds
+                        ),
                         currentRound = 1,
                         players = players.map { it.copy(score = 0) },
-                        isGameResultVisible = false
                     )
                 }
+                sendSnackbar("Game started")
             }
 
-            is HomeEvent.GameNameValueChange -> {
-                setState {
-                    copy(
-                        game = game.copy(
-                            name = event.gameName
-                        )
-                    )
-                }
-            }
-
-            is HomeEvent.TotalRoundsValueChange -> {
-                setState {
-                    copy(
-                        game = game.copy(
-                            maxRounds = event.totalRounds.toInt()
-                        )
-                    )
-                }
+            HomeEvent.AddPlayerClicked -> {
+                setEffect { HomeEffect.NavigateToAddPlayer }
             }
         }
     }
 
-    fun adjustPlayerPt(
+    private fun sendSnackbar(message: String) {
+        viewModelScope.launch {
+            SnackbarController.sendEvent(SnackbarEvent(message))
+        }
+    }
+
+    private fun adjustPlayerPt(
         players: List<Player>,
         editingPlayerId: String,
         delta: Int

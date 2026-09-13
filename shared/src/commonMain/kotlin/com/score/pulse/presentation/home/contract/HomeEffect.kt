@@ -3,5 +3,5 @@ package com.score.pulse.presentation.home.contract
 import com.greentasty.core.base.UiEffect
 
 sealed class HomeEffect : UiEffect {
-    data object NavigateToGameFinished : HomeEffect()
+    data object NavigateToAddPlayer : HomeEffect()
 }

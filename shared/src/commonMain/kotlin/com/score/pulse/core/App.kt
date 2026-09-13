@@ -2,9 +2,12 @@ package com.score.pulse.core
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.plus
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,14 +18,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.score.pulse.core.components.AppBottomNavBar
 import com.score.pulse.core.components.AppDestination
+import com.score.pulse.core.snackbar.ObserveAsEvents
+import com.score.pulse.core.snackbar.SnackbarController
 import com.score.pulse.core.theme.ScorePulseTheme
 import com.score.pulse.di.appModule
 import com.score.pulse.presentation.addplayer.ui.AddPlayerRoot
 import com.score.pulse.presentation.history.ui.HistoryRoot
 import com.score.pulse.presentation.home.ui.HomeRoot
+import com.score.pulse.presentation.home.viewmodel.HomeViewModel
 import com.score.pulse.presentation.leaderboard.ui.LeaderboardRoot
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.dsl.koinConfiguration
 
 @Composable
@@ -33,8 +40,26 @@ fun App() {
             var destination by remember { mutableStateOf(AppDestination.Home) }
             val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
-            val onMessage: (String) -> Unit = { message ->
-                scope.launch { snackbarHostState.showSnackbar(message) }
+            val homeViewModel: HomeViewModel = koinViewModel()
+            val homeListState = rememberLazyListState()
+
+            ObserveAsEvents(
+                flow = SnackbarController.events,
+                key1 = snackbarHostState,
+            ) { event ->
+                scope.launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+
+                    val result = snackbarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = event.action?.name,
+                        duration = SnackbarDuration.Long,
+                    )
+
+                    if (result == SnackbarResult.ActionPerformed) {
+                        event.action?.action?.invoke()
+                    }
+                }
             }
 
             Scaffold(
@@ -48,7 +73,10 @@ fun App() {
                 val contentPadding = innerPadding + PaddingValues(16.dp)
                 when (destination) {
                     AppDestination.Home -> HomeRoot(
-                        contentPadding = contentPadding
+                        contentPadding = contentPadding,
+                        listState = homeListState,
+                        viewModel = homeViewModel,
+                        onNavigateToAddPlayer = { destination = AppDestination.Add },
                     )
 
                     AppDestination.Ranks -> LeaderboardRoot(

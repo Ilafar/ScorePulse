@@ -1,27 +1,18 @@
 package com.score.pulse.presentation.home.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -34,6 +25,7 @@ import com.score.pulse.core.theme.ScorePulseTheme
 import com.score.pulse.domain.model.MatchParticipant
 import com.score.pulse.domain.model.MatchRecord
 import com.score.pulse.presentation.history.ui.MatchResultCard
+import com.score.pulse.presentation.home.contract.HomeEffect
 import com.score.pulse.presentation.home.contract.HomeEvent
 import com.score.pulse.presentation.home.contract.HomeState
 import com.score.pulse.presentation.home.viewmodel.HomeViewModel
@@ -43,33 +35,40 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeRoot(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
-    viewModel: HomeViewModel = koinViewModel()
+    listState: LazyListState = rememberLazyListState(),
+    viewModel: HomeViewModel = koinViewModel(),
+    onNavigateToAddPlayer: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    if (state.isStartGameDialogVisible)
-        StartGame(
-            state = state,
-            onEvent = viewModel::setEvent
-        )
-    else
-        GameContent(
-            modifier = modifier,
-            contentPadding = contentPadding,
-            state = state,
-            onEvent = viewModel::setEvent,
-        )
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                HomeEffect.NavigateToAddPlayer -> onNavigateToAddPlayer()
+            }
+        }
+    }
+
+    HomeScreen(
+        modifier = modifier,
+        contentPadding = contentPadding,
+        listState = listState,
+        state = state,
+        onEvent = viewModel::setEvent,
+    )
 }
 
 @Composable
-private fun GameContent(
+private fun HomeScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(16.dp),
+    listState: LazyListState = rememberLazyListState(),
     state: HomeState,
     onEvent: (HomeEvent) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
+        state = listState,
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -78,25 +77,39 @@ private fun GameContent(
                 gameTitle = state.game.name,
                 roundLabel = state.roundLabel,
                 players = state.players,
-                onCenterTap = {},
+                onCenterTap = { onEvent(HomeEvent.OpenStartGameDialog) },
             )
         }
         items(state.players, key = { it.id }) { player ->
             PlayerScoreEntryCard(
                 player = player,
                 onAdjust = { delta -> onEvent(HomeEvent.AdjustScoreClicked(player.id, delta)) },
-                onCustomEdit = { onEvent(HomeEvent.EditScoreClicked(player.id)) },
+                onCustomEdit = { onEvent(HomeEvent.OpenEditScoreDialog(player.id)) },
             )
         }
         item {
+            if (state.hasMinimumPlayers)
             GameActionBar(
                 currentRound = state.currentRound,
                 isFinalRound = state.isFinalRound,
-                onFinishMatch = { onEvent(HomeEvent.FinishMatchClicked) },
-                onLockRound = { onEvent(HomeEvent.LockRoundClicked) },
+                onFinishMatch = { onEvent(HomeEvent.OpenGameResultDialog) },
+                onLockRound = { onEvent(HomeEvent.OpenLockRoundDialog) },
             )
         }
+        item {
+            if (!state.hasMinimumPlayers) {
+                NoPlayerInfoBanner(onAddPlayerClick = { onEvent(HomeEvent.AddPlayerClicked) })
+            }
+        }
     }
+
+    if (state.isStartGameDialogVisible)
+        StartGame(
+            onStartGame = { gameName, totalRounds ->
+                onEvent(HomeEvent.StartNewGameClicked(gameName, totalRounds))
+            },
+            onDismiss = { onEvent(HomeEvent.DismissStartGame) }
+        )
 
     if (state.isGameResultVisible) {
         Dialog(
@@ -129,7 +142,7 @@ private fun GameContent(
                         .fillMaxWidth()
                         .padding(12.dp),
                     text = "New game",
-                    onClick = { onEvent(HomeEvent.NewGameClicked) }
+                    onClick = { onEvent(HomeEvent.OpenStartGameDialog) }
                 )
             }
         }
@@ -164,70 +177,11 @@ private fun GameContent(
     }
 }
 
-@Composable
-private fun CustomScoreDialog(
-    currentScore: Int,
-    onDismiss: () -> Unit,
-    onConfirm: (Int) -> Unit,
-) {
-    var text by remember(currentScore) { mutableStateOf(currentScore.toString()) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Enter custom score") },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { input -> if (input.all { it.isDigit() }) text = input },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { text.toIntOrNull()?.let(onConfirm) ?: onDismiss() }) {
-                Text("Apply", color = MaterialTheme.colorScheme.primary)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        },
-    )
-}
-
-@Composable
-private fun StartGame(
-    state: HomeState,
-    onEvent: (HomeEvent) -> Unit = {},
-) {
-    Dialog(
-        onDismissRequest = { onEvent(HomeEvent.DismissStartGame) }
-    ){
-        GlassCard {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                OutlinedTextField(
-                    value = state.game.name,
-                    onValueChange = { onEvent(HomeEvent.GameNameValueChange(it)) }
-                )
-                OutlinedTextField(
-                    value = state.game.maxRounds.toString(),
-                    onValueChange = { onEvent(HomeEvent.TotalRoundsValueChange(it)) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal
-                    )
-                )
-            }
-        }
-    }
-}
-
 @Preview
 @Composable
-private fun GameContentPreview() {
+private fun HomeScreenPreview() {
     ScorePulseTheme {
-        GameContent(
+        HomeScreen(
             state = HomeState()
         )
     }
