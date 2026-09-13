@@ -186,7 +186,7 @@ private fun ArenaVsBadge(onClick: () -> Unit) {
                 modifier = Modifier.size(26.dp),
             )
             Text(
-                text = "VS",
+                text = "Start",
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
