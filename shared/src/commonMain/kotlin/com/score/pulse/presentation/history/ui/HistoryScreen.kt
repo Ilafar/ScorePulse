@@ -12,15 +12,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.score.pulse.core.theme.ScorePulseTheme
 import com.score.pulse.domain.model.AccentColor
 import com.score.pulse.domain.model.MatchParticipant
 import com.score.pulse.domain.model.MatchRecord
 import com.score.pulse.domain.model.PlayerEmblem
-import com.score.pulse.core.theme.ScorePulseTheme
 
-/** Completed match summaries — a lazily rendered feed of [MatchHistoryCard]s. */
 @Composable
-fun HistoryScreen(
+fun HistoryRoot(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues
+){
+    HistoryScreen(
+        modifier = modifier,
+        contentPadding = contentPadding
+    )
+}
+
+@Composable
+private fun HistoryScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(16.dp)
 ) {
@@ -38,7 +48,7 @@ fun HistoryScreen(
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }
-        items(matches, key = { it.id }) { match -> MatchHistoryCard(match = match) }
+        items(matches, key = { it.id }) { match -> MatchResultCard(match = match) }
     }
 }
 

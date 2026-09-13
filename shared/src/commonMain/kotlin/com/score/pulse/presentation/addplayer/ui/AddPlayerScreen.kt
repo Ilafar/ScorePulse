@@ -27,22 +27,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.score.pulse.core.components.GradientPrimaryButton
 import com.score.pulse.core.components.SectionHeader
+import com.score.pulse.core.theme.ScorePulseTheme
 import com.score.pulse.domain.model.AccentColor
 import com.score.pulse.domain.model.Player
 import com.score.pulse.domain.model.PlayerEmblem
-import com.score.pulse.core.theme.ScorePulseTheme
 
-/**
- * Add-player form + roster management. Everything (form, emblem/color pickers,
- * roster rows, danger zone) lives in a single outer [LazyColumn] so the roster
- * itself can be a genuinely lazy, appendable list without nesting a scrollable
- * inside a scrollable.
- */
 @Composable
-fun AddPlayerScreen(
+fun AddPlayerRoot(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
+){
+    AddPlayerScreen(
+        modifier = modifier,
+        contentPadding = contentPadding
+    )
+}
+
+@Composable
+private fun AddPlayerScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(16.dp),
-    onMessage: (String) -> Unit = {},
 ) {
     var name by remember { mutableStateOf("") }
     var selectedEmblem by remember { mutableStateOf(PlayerEmblem.Gamepad) }
@@ -56,7 +60,6 @@ fun AddPlayerScreen(
         roster = listOf(Player("p$nextId", trimmed, selectedEmblem, selectedAccent)) + roster
         nextId += 1
         name = ""
-        onMessage("$trimmed added to roster")
     }
 
     LazyColumn(
@@ -118,7 +121,7 @@ fun AddPlayerScreen(
         }
         rosterList(roster = roster, onRemove = { player -> roster = roster - player })
         item {
-            DangerZoneCard(onConfirmClear = { onMessage("Score history cleared") })
+            DangerZoneCard(onConfirmClear = {  })
         }
     }
 }

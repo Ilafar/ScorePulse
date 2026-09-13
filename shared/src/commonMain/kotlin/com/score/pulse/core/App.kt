@@ -16,50 +16,53 @@ import androidx.compose.ui.unit.dp
 import com.score.pulse.core.components.AppBottomNavBar
 import com.score.pulse.core.components.AppDestination
 import com.score.pulse.core.theme.ScorePulseTheme
-import com.score.pulse.presentation.addplayer.ui.AddPlayerScreen
-import com.score.pulse.presentation.history.ui.HistoryScreen
-import com.score.pulse.presentation.home.ui.HomeScreen
-import com.score.pulse.presentation.leaderboard.ui.LeaderboardScreen
+import com.score.pulse.di.appModule
+import com.score.pulse.presentation.addplayer.ui.AddPlayerRoot
+import com.score.pulse.presentation.history.ui.HistoryRoot
+import com.score.pulse.presentation.home.ui.HomeRoot
+import com.score.pulse.presentation.leaderboard.ui.LeaderboardRoot
 import kotlinx.coroutines.launch
+import org.koin.compose.KoinApplication
+import org.koin.dsl.koinConfiguration
 
 @Composable
 @Preview
 fun App() {
-    ScorePulseTheme {
-        var destination by remember { mutableStateOf(AppDestination.Home) }
-        val snackbarHostState = remember { SnackbarHostState() }
-        val scope = rememberCoroutineScope()
-        val onMessage: (String) -> Unit = { message ->
-            scope.launch { snackbarHostState.showSnackbar(message) }
-        }
+    KoinApplication(configuration = koinConfiguration { modules(appModule) }) {
+        ScorePulseTheme {
+            var destination by remember { mutableStateOf(AppDestination.Home) }
+            val snackbarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
+            val onMessage: (String) -> Unit = { message ->
+                scope.launch { snackbarHostState.showSnackbar(message) }
+            }
 
-        Scaffold(
-            bottomBar = {
-                AppBottomNavBar(
-                    selected = destination,
-                    onSelect = { destination = it })
-            },
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-        ) { innerPadding ->
-            val contentPadding = innerPadding + PaddingValues(16.dp)
-            when (destination) {
-                AppDestination.Home -> HomeScreen(
-                    contentPadding = contentPadding,
-                    onMessage = onMessage
-                )
+            Scaffold(
+                bottomBar = {
+                    AppBottomNavBar(
+                        selected = destination,
+                        onSelect = { destination = it })
+                },
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+            ) { innerPadding ->
+                val contentPadding = innerPadding + PaddingValues(16.dp)
+                when (destination) {
+                    AppDestination.Home -> HomeRoot(
+                        contentPadding = contentPadding
+                    )
 
-                AppDestination.Ranks -> LeaderboardScreen(
-                    contentPadding = contentPadding
-                )
+                    AppDestination.Ranks -> LeaderboardRoot(
+                        contentPadding = contentPadding
+                    )
 
-                AppDestination.Add -> AddPlayerScreen(
-                    onMessage = onMessage,
-                    contentPadding = contentPadding
-                )
+                    AppDestination.Add -> AddPlayerRoot(
+                        contentPadding = contentPadding
+                    )
 
-                AppDestination.History -> HistoryScreen(
-                    contentPadding = contentPadding
-                )
+                    AppDestination.History -> HistoryRoot(
+                        contentPadding = contentPadding
+                    )
+                }
             }
         }
     }

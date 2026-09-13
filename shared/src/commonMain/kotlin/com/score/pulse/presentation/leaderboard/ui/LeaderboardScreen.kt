@@ -16,17 +16,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.score.pulse.core.theme.ScorePulseTheme
 import com.score.pulse.domain.model.AccentColor
 import com.score.pulse.domain.model.PlayerEmblem
 import com.score.pulse.domain.model.RankingEntry
-import com.score.pulse.core.theme.ScorePulseTheme
 
-/**
- * Global standings & podium ranks. Content is split into [PodiumSection]
- * (top 3) and a lazy [RankingRow] table for the remaining field.
- */
 @Composable
-fun LeaderboardScreen(
+fun LeaderboardRoot(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
+){
+    LeaderboardScreen(
+        modifier = modifier,
+        contentPadding = contentPadding
+    )
+}
+
+@Composable
+private fun LeaderboardScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(16.dp)
 ) {

@@ -27,7 +27,7 @@ import com.score.pulse.domain.model.PlayerEmblem
 
 /** One completed-match summary card: meta strip, [ChampionSpotlight] and [StandingsGrid]. */
 @Composable
-fun MatchHistoryCard(match: MatchRecord, modifier: Modifier = Modifier) {
+fun MatchResultCard(match: MatchRecord, modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -74,9 +74,9 @@ private fun MatchMetaTag(icon: ImageVector, text: String) {
 
 @Preview
 @Composable
-private fun MatchHistoryCardPreview() {
+private fun MatchResultCardPreview() {
     ScorePulseTheme {
-        MatchHistoryCard(
+        MatchResultCard(
             match = MatchRecord(
                 id = "m1",
                 title = "Cyber Clash Showdown - Final 4",

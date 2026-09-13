@@ -12,10 +12,10 @@ import androidx.compose.ui.unit.dp
 import com.score.pulse.core.components.GlassSecondaryButton
 import com.score.pulse.core.components.GradientPrimaryButton
 
-/** "Finish Match" + "Lock Round N" primary action row anchoring the Home screen. */
 @Composable
 fun GameActionBar(
-    round: Int,
+    currentRound: Int,
+    isFinalRound: Boolean,
     onFinishMatch: () -> Unit,
     onLockRound: () -> Unit,
     modifier: Modifier = Modifier,
@@ -30,11 +30,12 @@ fun GameActionBar(
             icon = Icons.Filled.Flag,
             modifier = Modifier.weight(1f),
         )
-        GradientPrimaryButton(
-            text = "Lock Round $round",
-            onClick = onLockRound,
-            icon = Icons.Filled.DoneAll,
-            modifier = Modifier.weight(1.4f),
-        )
+        if (!isFinalRound)
+            GradientPrimaryButton(
+                text = "Lock Round $currentRound",
+                onClick = onLockRound,
+                icon = Icons.Filled.DoneAll,
+                modifier = Modifier.weight(1.4f),
+            )
     }
 }

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.score.pulse.core.components.ScoreStatText
 import com.score.pulse.domain.model.MatchParticipant
 
-/** The winning player's highlight row within a [MatchHistoryCard]. */
+/** The winning player's highlight row within a [MatchResultCard]. */
 @Composable
 fun ChampionSpotlight(champion: MatchParticipant, modifier: Modifier = Modifier) {
     Row(

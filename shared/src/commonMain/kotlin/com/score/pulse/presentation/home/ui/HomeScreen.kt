@@ -1,8 +1,11 @@
 package com.score.pulse.presentation.home.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,38 +19,55 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.domain.model.AccentColor
-import com.score.pulse.domain.model.Player
-import com.score.pulse.domain.model.PlayerEmblem
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.score.pulse.core.components.AlertDialogCompact
+import com.score.pulse.core.components.GlassCard
+import com.score.pulse.core.components.GradientPrimaryButton
 import com.score.pulse.core.theme.ScorePulseTheme
+import com.score.pulse.domain.model.MatchParticipant
+import com.score.pulse.domain.model.MatchRecord
+import com.score.pulse.presentation.history.ui.MatchResultCard
+import com.score.pulse.presentation.home.contract.HomeEvent
+import com.score.pulse.presentation.home.contract.HomeState
+import com.score.pulse.presentation.home.viewmodel.HomeViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
-/**
- * Active game arena — live scorekeeping for the current match.
- * Holds all round/roster state locally; screen content is split into
- * [ArenaRadarCard], [PlayerScoreEntryCard] and [GameActionBar].
- */
 @Composable
-fun HomeScreen(
+fun HomeRoot(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues,
+    viewModel: HomeViewModel = koinViewModel()
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    if (state.isStartGameDialogVisible)
+        StartGame(
+            state = state,
+            onEvent = viewModel::setEvent
+        )
+    else
+        GameContent(
+            modifier = modifier,
+            contentPadding = contentPadding,
+            state = state,
+            onEvent = viewModel::setEvent,
+        )
+}
+
+@Composable
+private fun GameContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(16.dp),
-    onMessage: (String) -> Unit = {},
+    state: HomeState,
+    onEvent: (HomeEvent) -> Unit = {},
 ) {
-    var players by remember { mutableStateOf(sampleHomePlayers()) }
-    var round by remember { mutableStateOf(3) }
-    val totalRounds = 5
-    var editingPlayerId by remember { mutableStateOf<String?>(null) }
-
-    fun adjust(playerId: String, delta: Int) {
-        players = players.map {
-            if (it.id == playerId) it.copy(score = (it.score + delta).coerceAtLeast(0)) else it
-        }
-        onMessage((if (delta > 0) "+$delta" else "$delta") + " PTS applied")
-    }
-
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = contentPadding,
@@ -55,40 +75,90 @@ fun HomeScreen(
     ) {
         item {
             ArenaRadarCard(
-                gameTitle = "Cyberclash Shutdown",
-                roundLabel = "Round $round/$totalRounds",
-                players = players,
-                onCenterTap = { onMessage("Nexus Clash Synced") },
+                gameTitle = state.game.name,
+                roundLabel = state.roundLabel,
+                players = state.players,
+                onCenterTap = {},
             )
         }
-        items(players, key = { it.id }) { player ->
+        items(state.players, key = { it.id }) { player ->
             PlayerScoreEntryCard(
                 player = player,
-                onAdjust = { delta -> adjust(player.id, delta) },
-                onCustomEdit = { editingPlayerId = player.id },
+                onAdjust = { delta -> onEvent(HomeEvent.AdjustScoreClicked(player.id, delta)) },
+                onCustomEdit = { onEvent(HomeEvent.EditScoreClicked(player.id)) },
             )
         }
         item {
             GameActionBar(
-                round = round,
-                onFinishMatch = { onMessage("Finalizing Cyber Clash Match") },
-                onLockRound = {
-                    if (round < totalRounds) round += 1
-                    onMessage("Round locked! Advancing to Round ${round.coerceAtMost(totalRounds)}")
-                },
+                currentRound = state.currentRound,
+                isFinalRound = state.isFinalRound,
+                onFinishMatch = { onEvent(HomeEvent.FinishMatchClicked) },
+                onLockRound = { onEvent(HomeEvent.LockRoundClicked) },
             )
         }
     }
 
-    val editingPlayer = players.firstOrNull { it.id == editingPlayerId }
+    if (state.isGameResultVisible) {
+        Dialog(
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+            ),
+            onDismissRequest = {}
+        ) {
+            GlassCard {
+                MatchResultCard(
+                    match = MatchRecord(
+                        id = "m1",
+                        title = state.game.name,
+                        durationMinutes = 42,
+                        dateLabel = "Today, 8:45 PM",
+                        participants = state.players.map {
+                            MatchParticipant(
+                                name = it.name,
+                                score = it.score,
+                                rank = it.score,
+                                accent = it.accent,
+                                emblem = it.emblem
+                            )
+                        }
+                    )
+                )
+                GradientPrimaryButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    text = "New game",
+                    onClick = { onEvent(HomeEvent.NewGameClicked) }
+                )
+            }
+        }
+    }
+
+    if (state.isLockRoundConfirmationVisible) {
+        AlertDialogCompact(
+            title = "Lock Round",
+            text = "Reset player points for next round?",
+            dismissText = "Continue without reset",
+            confirmText = "Reset",
+            onDismiss = { onEvent(HomeEvent.DismissLockRound) },
+            onConfirm = { onEvent(HomeEvent.ConfirmLockRoundClicked) },
+        )
+    }
+
+    val editingPlayer = state.editingPlayer
     if (editingPlayer != null) {
         CustomScoreDialog(
             currentScore = editingPlayer.score,
-            onDismiss = { editingPlayerId = null },
+            onDismiss = { onEvent(HomeEvent.DismissEdit) },
             onConfirm = { newScore ->
-                players = players.map { if (it.id == editingPlayer.id) it.copy(score = newScore) else it }
-                onMessage("Score adjusted to $newScore")
-                editingPlayerId = null
+                onEvent(
+                    HomeEvent.AdjustScoreClicked(
+                        editingPlayer.id,
+                        newScore - editingPlayer.score
+                    )
+                )
+                onEvent(HomeEvent.DismissEdit)
             },
         )
     }
@@ -123,17 +193,42 @@ private fun CustomScoreDialog(
     )
 }
 
-private fun sampleHomePlayers(): List<Player> = listOf(
-    Player("p1", "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald, score = 142),
-    Player("p2", "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan, score = 118),
-    Player("p3", "Marcus \"Rex\"", PlayerEmblem.Phoenix, AccentColor.Magenta, score = 95),
-    Player("p4", "Elena \"Pulse\"", PlayerEmblem.Shield, AccentColor.Violet, score = 86),
-)
+@Composable
+private fun StartGame(
+    state: HomeState,
+    onEvent: (HomeEvent) -> Unit = {},
+) {
+    Dialog(
+        onDismissRequest = { onEvent(HomeEvent.DismissStartGame) }
+    ){
+        GlassCard {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                OutlinedTextField(
+                    value = state.game.name,
+                    onValueChange = { onEvent(HomeEvent.GameNameValueChange(it)) }
+                )
+                OutlinedTextField(
+                    value = state.game.maxRounds.toString(),
+                    onValueChange = { onEvent(HomeEvent.TotalRoundsValueChange(it)) },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal
+                    )
+                )
+            }
+        }
+    }
+}
 
 @Preview
 @Composable
-private fun HomeScreenPreview() {
+private fun GameContentPreview() {
     ScorePulseTheme {
-        HomeScreen()
+        GameContent(
+            state = HomeState()
+        )
     }
 }
