@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.addplayer.ui
+package com.score.pulse.addplayer.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,11 +27,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import com.score.pulse.core.components.GlassCard
 import androidx.compose.ui.unit.dp
+import com.score.pulse.core.presentation.components.GlassCard
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
-/** Warning card with a two-tap-confirm "Clear Entire Score History" action. */
 @Composable
 fun DangerZoneCard(onConfirmClear: () -> Unit, modifier: Modifier = Modifier) {
     var confirming by remember { mutableStateOf(false) }
@@ -39,7 +39,7 @@ fun DangerZoneCard(onConfirmClear: () -> Unit, modifier: Modifier = Modifier) {
 
     LaunchedEffect(confirming) {
         if (confirming) {
-            delay(4000)
+            delay(4.seconds)
             confirming = false
         }
     }
@@ -70,8 +70,8 @@ fun DangerZoneCard(onConfirmClear: () -> Unit, modifier: Modifier = Modifier) {
                         color = MaterialTheme.colorScheme.error,
                     )
                     Text(
-                        text = "Resetting will permanently purge combat telemetry, match streaks, and podium placements across this device.",
                         style = MaterialTheme.typography.bodySmall,
+                        text = "Resetting will permanently delete all players",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -79,7 +79,7 @@ fun DangerZoneCard(onConfirmClear: () -> Unit, modifier: Modifier = Modifier) {
 
             val (label, icon, background, contentColor) = when {
                 cleared -> Quadruple(
-                    "History Reset Completed",
+                    "Reset Completed",
                     Icons.Filled.CheckCircle,
                     MaterialTheme.colorScheme.surfaceContainerHigh,
                     MaterialTheme.colorScheme.onSurfaceVariant,
@@ -91,7 +91,7 @@ fun DangerZoneCard(onConfirmClear: () -> Unit, modifier: Modifier = Modifier) {
                     MaterialTheme.colorScheme.onError,
                 )
                 else -> Quadruple(
-                    "Clear Entire Score History",
+                    "Clear All Players",
                     Icons.Filled.HistoryToggleOff,
                     MaterialTheme.colorScheme.surfaceContainerHigh,
                     MaterialTheme.colorScheme.error,

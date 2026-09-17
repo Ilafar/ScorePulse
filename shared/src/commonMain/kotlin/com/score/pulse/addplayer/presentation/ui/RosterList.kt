@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.addplayer.ui
+package com.score.pulse.addplayer.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,11 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import com.score.pulse.core.components.EmblemAvatar
-import com.score.pulse.domain.model.Player
 import androidx.compose.ui.unit.dp
+import com.score.pulse.core.domain.model.Player
+import com.score.pulse.core.presentation.components.EmblemAvatar
 
-/** Splices the active roster into the screen's outer LazyColumn, one row per player. */
 fun LazyListScope.rosterList(roster: List<Player>, onRemove: (Player) -> Unit) {
     items(roster, key = { it.id }) { player ->
         RosterListItem(player = player, onRemove = { onRemove(player) })

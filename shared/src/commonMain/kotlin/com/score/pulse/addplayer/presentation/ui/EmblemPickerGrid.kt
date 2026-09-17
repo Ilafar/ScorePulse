@@ -1,18 +1,16 @@
-package com.score.pulse.presentation.addplayer.ui
+package com.score.pulse.addplayer.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -26,47 +24,54 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.theme.ScorePulseTheme
-import com.score.pulse.domain.model.PlayerEmblem
+import com.score.pulse.core.domain.model.AccentColor
+import com.score.pulse.core.domain.model.PlayerEmblem
+import com.score.pulse.core.domain.model.containerColor
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
 
-/**
- * 4-column grid of the 12 selectable player emblems.
- * Fixed item count, so a bounded height + disabled internal scroll keeps it
- * safely nestable inside the screen's outer LazyColumn.
- */
 @Composable
 fun EmblemPickerGrid(
+    modifier: Modifier = Modifier,
     selected: PlayerEmblem,
     onSelect: (PlayerEmblem) -> Unit,
-    modifier: Modifier = Modifier,
+    accentColor: AccentColor
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(4),
-        modifier = modifier
-            .fillMaxWidth()
-            .height(258.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    Column(
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        userScrollEnabled = false,
     ) {
-        items(PlayerEmblem.entries.toList()) { emblem ->
-            EmblemPickerCell(
-                emblem = emblem,
-                isSelected = emblem == selected,
-                onClick = { onSelect(emblem) },
-            )
+        PlayerEmblem.entries.chunked(4).forEach { rowEmblems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                rowEmblems.forEach { emblem ->
+                    EmblemPickerCell(
+                        emblem = emblem,
+                        isSelected = emblem == selected,
+                        onClick = { onSelect(emblem) },
+                        modifier = Modifier.weight(1f),
+                        accentColor = accentColor
+                    )
+                }
+                repeat(4 - rowEmblems.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun EmblemPickerCell(
+    modifier: Modifier = Modifier,
     emblem: PlayerEmblem,
     isSelected: Boolean,
     onClick: () -> Unit,
+    accentColor: AccentColor
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(1f)
             .clip(MaterialTheme.shapes.medium)
             .background(
@@ -80,7 +85,7 @@ private fun EmblemPickerCell(
             Icon(
                 imageVector = emblem.icon,
                 contentDescription = emblem.label,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = accentColor.containerColor(),
                 modifier = Modifier.size(26.dp),
             )
             Text(
@@ -96,7 +101,7 @@ private fun EmblemPickerCell(
                     .align(Alignment.TopEnd)
                     .size(18.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
+                    .background(accentColor.containerColor()),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -114,6 +119,10 @@ private fun EmblemPickerCell(
 @Composable
 private fun EmblemPickerGridPreview() {
     ScorePulseTheme {
-        EmblemPickerGrid(selected = PlayerEmblem.Gamepad, onSelect = {})
+        EmblemPickerGrid(
+            selected = PlayerEmblem.Gamepad,
+            onSelect = {},
+            accentColor = AccentColor.Emerald
+        )
     }
 }

@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.addplayer.ui
+package com.score.pulse.addplayer.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,12 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.domain.model.AccentColor
-import com.score.pulse.domain.model.containerColor
-import com.score.pulse.domain.model.onContainerColor
+import com.score.pulse.core.domain.model.AccentColor
+import com.score.pulse.core.domain.model.containerColor
+import com.score.pulse.core.domain.model.onContainerColor
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
 
-/** Row of the 5 "Neon HUD Accent" dots — a fixed, non-scrolling picker. */
 @Composable
 fun AccentColorPicker(
     selected: AccentColor,
@@ -57,5 +58,17 @@ fun AccentColorPicker(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AccentColorPickerPreview() {
+    ScorePulseTheme {
+        AccentColorPicker(
+            selected = AccentColor.Emerald,
+            onSelect = {},
+            modifier = Modifier.padding(16.dp),
+        )
     }
 }

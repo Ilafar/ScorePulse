@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.addplayer.ui
+package com.score.pulse.addplayer.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,27 +19,30 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.GradientPrimaryButton
-import com.score.pulse.core.components.SectionHeader
-import com.score.pulse.core.theme.ScorePulseTheme
-import com.score.pulse.domain.model.AccentColor
-import com.score.pulse.domain.model.Player
-import com.score.pulse.domain.model.PlayerEmblem
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.score.pulse.addplayer.presentation.contract.AddPlayerEvent
+import com.score.pulse.addplayer.presentation.contract.AddPlayerState
+import com.score.pulse.addplayer.presentation.viewmodel.AddPlayerViewModel
+import com.score.pulse.core.presentation.components.GradientPrimaryButton
+import com.score.pulse.core.presentation.components.SectionHeader
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AddPlayerRoot(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
-){
+    viewModel: AddPlayerViewModel = koinViewModel()
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     AddPlayerScreen(
         modifier = modifier,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        state = state,
+        onEvent = viewModel::setEvent,
     )
 }
 
@@ -47,20 +50,10 @@ fun AddPlayerRoot(
 private fun AddPlayerScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(16.dp),
+    state: AddPlayerState = AddPlayerState(),
+    onEvent: (AddPlayerEvent) -> Unit = {},
 ) {
-    var name by remember { mutableStateOf("") }
-    var selectedEmblem by remember { mutableStateOf(PlayerEmblem.Gamepad) }
-    var selectedAccent by remember { mutableStateOf(AccentColor.Emerald) }
-    var roster by remember { mutableStateOf(sampleRoster()) }
-    var nextId by remember { mutableStateOf(roster.size + 1) }
-
-    fun addPlayer() {
-        val trimmed = name.trim()
-        if (trimmed.isEmpty()) return
-        roster = listOf(Player("p$nextId", trimmed, selectedEmblem, selectedAccent)) + roster
-        nextId += 1
-        name = ""
-    }
+    val roster = state.roster
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -69,16 +62,24 @@ private fun AddPlayerScreen(
     ) {
         item {
             OutlinedTextField(
-                value = name,
-                onValueChange = { if (it.length <= 20) name = it },
+                value = state.name,
+                onValueChange = { onEvent(AddPlayerEvent.OnNameChange(it)) },
                 label = { Text("Player Name") },
                 placeholder = { Text("e.g. ShadowHunter") },
                 leadingIcon = { Icon(Icons.Filled.Badge, contentDescription = null) },
                 trailingIcon = {
-                    if (name.isNotEmpty()) {
-                        IconButton(onClick = { name = "" }) {
+                    if (state.name.isNotEmpty()) {
+                        IconButton(onClick = { onEvent(AddPlayerEvent.ClearNameClick) }) {
                             Icon(Icons.Filled.Close, contentDescription = "Clear")
                         }
+                    }
+                },
+                supportingText = {
+                    if (state.nameError != null) {
+                        Text(
+                            text = state.nameError.asString(),
+                            color = MaterialTheme.colorScheme.error,
+                        )
                     }
                 },
                 singleLine = true,
@@ -86,22 +87,35 @@ private fun AddPlayerScreen(
             )
         }
         item {
-            SectionHeader(title = "Choose Player Emblem", icon = Icons.Filled.SportsEsports)
+            SectionHeader(
+                title = "Choose Player Emblem",
+                icon = Icons.Filled.SportsEsports
+            )
         }
         item {
-            EmblemPickerGrid(selected = selectedEmblem, onSelect = { selectedEmblem = it })
+            EmblemPickerGrid(
+                selected = state.emblem,
+                onSelect = { onEvent(AddPlayerEvent.OnEmblemChange(it)) },
+                accentColor = state.accent
+            )
         }
         item {
-            SectionHeader(title = "Neon HUD Accent", icon = Icons.Filled.Palette)
+            SectionHeader(
+                title = "Choose Accent",
+                icon = Icons.Filled.Palette
+            )
         }
         item {
-            AccentColorPicker(selected = selectedAccent, onSelect = { selectedAccent = it })
+            AccentColorPicker(
+                selected = state.accent,
+                onSelect = { onEvent(AddPlayerEvent.OnAccentChange(it)) }
+            )
         }
         item {
             GradientPrimaryButton(
                 text = "Add Player to Roster",
                 icon = Icons.Filled.PersonAdd,
-                onClick = ::addPlayer,
+                onClick = { onEvent(AddPlayerEvent.AddPlayerClick) },
                 modifier = Modifier.fillMaxWidth(),
             )
         }
@@ -119,18 +133,12 @@ private fun AddPlayerScreen(
                 },
             )
         }
-        rosterList(roster = roster, onRemove = { player -> roster = roster - player })
+        rosterList(roster = roster, onRemove = { onEvent(AddPlayerEvent.PlayerRemoveClick) })
         item {
-            DangerZoneCard(onConfirmClear = {  })
+            DangerZoneCard(onConfirmClear = { onEvent(AddPlayerEvent.ClearHistoryClick) })
         }
     }
 }
-
-private fun sampleRoster(): List<Player> = listOf(
-    Player("r1", "ShadowHunter", PlayerEmblem.Gamepad, AccentColor.Emerald),
-    Player("r2", "ViperPulse", PlayerEmblem.Thunder, AccentColor.Cyan),
-    Player("r3", "NovaBlitz", PlayerEmblem.Phoenix, AccentColor.Magenta),
-)
 
 @Preview
 @Composable
