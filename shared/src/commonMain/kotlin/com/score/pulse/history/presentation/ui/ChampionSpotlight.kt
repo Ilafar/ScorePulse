@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.history.ui
+package com.score.pulse.history.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,10 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.ScoreStatText
-import com.score.pulse.domain.model.MatchParticipant
+import com.score.pulse.core.presentation.components.ScoreStatText
+import com.score.pulse.history.domain.model.MatchParticipant
 
-/** The winning player's highlight row within a [MatchResultCard]. */
 @Composable
 fun ChampionSpotlight(champion: MatchParticipant, modifier: Modifier = Modifier) {
     Row(

@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.history.ui
+package com.score.pulse.history.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,17 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.EmblemAvatar
-import com.score.pulse.core.components.grouped
-import com.score.pulse.domain.model.MatchParticipant
-import com.score.pulse.domain.model.containerColor
+import com.score.pulse.core.domain.model.containerColor
+import com.score.pulse.core.presentation.components.EmblemAvatar
+import com.score.pulse.core.presentation.components.grouped
+import com.score.pulse.history.domain.model.MatchParticipant
 
-/**
- * 2-column standings grid for one match's participants. Deliberately not a
- * LazyVerticalGrid: the item count is small and fixed (one match's roster),
- * and this already lives inside the outer match-feed LazyColumn's item scope —
- * nesting a second scrollable there buys nothing.
- */
 @Composable
 fun StandingsGrid(participants: List<MatchParticipant>, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {

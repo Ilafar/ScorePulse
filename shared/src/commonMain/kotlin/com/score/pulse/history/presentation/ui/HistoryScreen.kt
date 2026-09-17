@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.history.ui
+package com.score.pulse.history.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,11 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.theme.ScorePulseTheme
-import com.score.pulse.domain.model.AccentColor
-import com.score.pulse.domain.model.MatchParticipant
-import com.score.pulse.domain.model.MatchRecord
-import com.score.pulse.domain.model.PlayerEmblem
+import com.score.pulse.core.domain.model.AccentColor
+import com.score.pulse.core.domain.model.PlayerEmblem
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
+import com.score.pulse.history.domain.model.MatchParticipant
+import com.score.pulse.history.domain.model.MatchRecord
 
 @Composable
 fun HistoryRoot(
