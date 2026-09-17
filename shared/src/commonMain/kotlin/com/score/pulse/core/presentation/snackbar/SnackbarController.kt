@@ -1,0 +1,25 @@
+package com.score.pulse.core.presentation.snackbar
+
+import com.score.pulse.core.presentation.util.UiText
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+
+data class SnackbarEvent(
+    val message: UiText,
+    val action: SnackbarAction? = null,
+)
+
+data class SnackbarAction(
+    val name: String,
+    val action: suspend () -> Unit,
+)
+
+object SnackbarController {
+
+    private val _events = Channel<SnackbarEvent>()
+    val events = _events.receiveAsFlow()
+
+    suspend fun sendEvent(event: SnackbarEvent) {
+        _events.send(event)
+    }
+}

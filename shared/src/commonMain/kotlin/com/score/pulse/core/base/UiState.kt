@@ -1,3 +1,3 @@
-package com.greentasty.core.base
+package com.score.pulse.core.base
 
 interface UiState
