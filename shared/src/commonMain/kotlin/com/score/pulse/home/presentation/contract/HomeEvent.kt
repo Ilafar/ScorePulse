@@ -1,6 +1,6 @@
-package com.score.pulse.presentation.home.contract
+package com.score.pulse.home.presentation.contract
 
-import com.greentasty.core.base.UiEvent
+import com.score.pulse.core.base.UiEvent
 
 sealed class HomeEvent : UiEvent {
 
@@ -8,10 +8,10 @@ sealed class HomeEvent : UiEvent {
     data object OpenStartGameDialog : HomeEvent()
     data object OpenLockRoundDialog : HomeEvent()
     data object OpenGameResultDialog : HomeEvent()
-    data class OpenEditScoreDialog(val playerId: String) : HomeEvent()
+    data class OpenEditScoreDialog(val playerId: Int) : HomeEvent()
 
     //Click
-    data class AdjustScoreClicked(val playerId: String, val delta: Int) : HomeEvent()
+    data class AdjustScoreClicked(val playerId: Int, val delta: Int) : HomeEvent()
     data class StartNewGameClicked(val gameName: String, val totalRounds: Int) : HomeEvent()
     data object ConfirmLockRoundClicked : HomeEvent()
     data object AddPlayerClicked : HomeEvent()

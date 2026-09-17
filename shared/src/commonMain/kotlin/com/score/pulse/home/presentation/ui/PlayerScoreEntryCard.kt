@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.home.ui
+package com.score.pulse.home.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,13 +22,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.EmblemAvatar
-import com.score.pulse.core.components.GlassCard
-import com.score.pulse.core.components.ScoreStatText
-import com.score.pulse.domain.model.Player
-import com.score.pulse.domain.model.containerColor
+import com.score.pulse.core.domain.model.Player
+import com.score.pulse.core.domain.model.containerColor
+import com.score.pulse.core.presentation.components.EmblemAvatar
+import com.score.pulse.core.presentation.components.GlassCard
+import com.score.pulse.core.presentation.components.ScoreStatText
 
-/** One roster player's live score-input row: avatar/name/score chip + stepper controls. */
 @Composable
 fun PlayerScoreEntryCard(
     player: Player,
@@ -65,7 +64,7 @@ fun PlayerScoreEntryCard(
                     .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                     .padding(horizontal = 12.dp, vertical = 4.dp),
             ) {
-                ScoreStatText(score = player.score, color = accent)
+                ScoreStatText(score = 0, color = accent)
             }
         }
 

@@ -1,14 +1,14 @@
-package com.score.pulse.presentation.home.contract
+package com.score.pulse.home.presentation.contract
 
-import com.greentasty.core.base.UiState
-import com.score.pulse.domain.model.Game
-import com.score.pulse.domain.model.Player
+import com.score.pulse.core.base.UiState
+import com.score.pulse.core.domain.model.Game
+import com.score.pulse.core.domain.model.Player
 
 data class HomeState(
     val game: Game = Game(),
     val players: List<Player> = emptyList(),
     val currentRound: Int = 1,
-    val editingPlayerId: String? = null,
+    val editingPlayerId: Int? = null,
     val isLockRoundConfirmationVisible: Boolean = false,
     val isGameResultVisible: Boolean = false,
     val isStartGameDialogVisible: Boolean = false,

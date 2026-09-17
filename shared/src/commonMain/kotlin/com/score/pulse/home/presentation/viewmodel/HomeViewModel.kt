@@ -1,15 +1,11 @@
-package com.score.pulse.presentation.home.viewmodel
+package com.score.pulse.home.presentation.viewmodel
 
-import androidx.lifecycle.viewModelScope
 import com.score.pulse.core.base.BaseViewModel
-import com.score.pulse.core.snackbar.SnackbarController
-import com.score.pulse.core.snackbar.SnackbarEvent
-import com.score.pulse.domain.model.Game
-import com.score.pulse.domain.model.Player
-import com.score.pulse.presentation.home.contract.HomeEffect
-import com.score.pulse.presentation.home.contract.HomeEvent
-import com.score.pulse.presentation.home.contract.HomeState
-import kotlinx.coroutines.launch
+import com.score.pulse.core.domain.model.Game
+import com.score.pulse.core.domain.model.Player
+import com.score.pulse.home.presentation.contract.HomeEffect
+import com.score.pulse.home.presentation.contract.HomeEvent
+import com.score.pulse.home.presentation.contract.HomeState
 
 class HomeViewModel : BaseViewModel<HomeEvent, HomeState, HomeEffect>() {
 
@@ -79,7 +75,7 @@ class HomeViewModel : BaseViewModel<HomeEvent, HomeState, HomeEffect>() {
                             maxRounds = event.totalRounds
                         ),
                         currentRound = 1,
-                        players = players.map { it.copy(score = 0) },
+                        players = players.map { it },
                     )
                 }
                 sendSnackbar("Game started")
@@ -91,20 +87,14 @@ class HomeViewModel : BaseViewModel<HomeEvent, HomeState, HomeEffect>() {
         }
     }
 
-    private fun sendSnackbar(message: String) {
-        viewModelScope.launch {
-            SnackbarController.sendEvent(SnackbarEvent(message))
-        }
-    }
-
     private fun adjustPlayerPt(
         players: List<Player>,
-        editingPlayerId: String,
+        editingPlayerId: Int,
         delta: Int
     ): List<Player> {
         return players.map {
             if (it.id == editingPlayerId)
-                it.copy(score = (it.score + delta).coerceAtLeast(0))
+                it.copy()
             else it
         }
     }

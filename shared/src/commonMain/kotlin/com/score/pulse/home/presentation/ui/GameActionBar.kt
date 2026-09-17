@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.home.ui
+package com.score.pulse.home.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -9,8 +9,8 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.GlassSecondaryButton
-import com.score.pulse.core.components.GradientPrimaryButton
+import com.score.pulse.core.presentation.components.GlassSecondaryButton
+import com.score.pulse.core.presentation.components.GradientPrimaryButton
 
 @Composable
 fun GameActionBar(

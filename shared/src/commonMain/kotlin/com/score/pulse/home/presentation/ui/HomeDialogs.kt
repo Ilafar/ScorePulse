@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.home.ui
+package com.score.pulse.home.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.score.pulse.core.components.GlassCard
-import com.score.pulse.core.components.GradientPrimaryButton
+import com.score.pulse.core.presentation.components.GlassCard
+import com.score.pulse.core.presentation.components.GradientPrimaryButton
 
 @Composable
 fun CustomScoreDialog(

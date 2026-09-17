@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.home.ui
+package com.score.pulse.home.presentation.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.GlassCard
-import com.score.pulse.core.components.GradientPrimaryButton
+import com.score.pulse.core.presentation.components.GlassCard
+import com.score.pulse.core.presentation.components.GradientPrimaryButton
 
 @Composable
 fun NoPlayerInfoBanner(onAddPlayerClick: () -> Unit) {

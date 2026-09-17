@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.home.ui
+package com.score.pulse.home.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,17 +18,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.score.pulse.core.components.AlertDialogCompact
-import com.score.pulse.core.components.GlassCard
-import com.score.pulse.core.components.GradientPrimaryButton
-import com.score.pulse.core.theme.ScorePulseTheme
-import com.score.pulse.domain.model.MatchParticipant
-import com.score.pulse.domain.model.MatchRecord
-import com.score.pulse.presentation.history.ui.MatchResultCard
-import com.score.pulse.presentation.home.contract.HomeEffect
-import com.score.pulse.presentation.home.contract.HomeEvent
-import com.score.pulse.presentation.home.contract.HomeState
-import com.score.pulse.presentation.home.viewmodel.HomeViewModel
+import com.score.pulse.core.presentation.components.AlertDialogCompact
+import com.score.pulse.core.presentation.components.GlassCard
+import com.score.pulse.core.presentation.components.GradientPrimaryButton
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
+import com.score.pulse.history.domain.model.MatchParticipant
+import com.score.pulse.history.domain.model.MatchRecord
+import com.score.pulse.history.presentation.ui.MatchResultCard
+import com.score.pulse.home.presentation.contract.HomeEffect
+import com.score.pulse.home.presentation.contract.HomeEvent
+import com.score.pulse.home.presentation.contract.HomeState
+import com.score.pulse.home.presentation.viewmodel.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -129,8 +129,8 @@ private fun HomeScreen(
                         participants = state.players.map {
                             MatchParticipant(
                                 name = it.name,
-                                score = it.score,
-                                rank = it.score,
+                                score = 0,
+                                rank = 1,
                                 accent = it.accent,
                                 emblem = it.emblem
                             )
@@ -162,13 +162,13 @@ private fun HomeScreen(
     val editingPlayer = state.editingPlayer
     if (editingPlayer != null) {
         CustomScoreDialog(
-            currentScore = editingPlayer.score,
+            currentScore = 0,
             onDismiss = { onEvent(HomeEvent.DismissEdit) },
             onConfirm = { newScore ->
                 onEvent(
                     HomeEvent.AdjustScoreClicked(
                         editingPlayer.id,
-                        newScore - editingPlayer.score
+                        newScore
                     )
                 )
                 onEvent(HomeEvent.DismissEdit)

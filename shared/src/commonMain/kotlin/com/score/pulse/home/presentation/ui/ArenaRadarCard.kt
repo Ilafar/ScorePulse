@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.home.ui
+package com.score.pulse.home.presentation.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -31,14 +31,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.EmblemAvatar
-import com.score.pulse.core.components.GlassCard
-import com.score.pulse.core.components.grouped
-import com.score.pulse.core.theme.ScorePulseTheme
-import com.score.pulse.domain.model.AccentColor
-import com.score.pulse.domain.model.Player
-import com.score.pulse.domain.model.PlayerEmblem
-import com.score.pulse.domain.model.containerColor
+import com.score.pulse.core.domain.model.AccentColor
+import com.score.pulse.core.domain.model.Player
+import com.score.pulse.core.domain.model.PlayerEmblem
+import com.score.pulse.core.domain.model.containerColor
+import com.score.pulse.core.presentation.components.EmblemAvatar
+import com.score.pulse.core.presentation.components.GlassCard
+import com.score.pulse.core.presentation.components.grouped
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
 
 @Composable
 fun ArenaRadarCard(
@@ -254,7 +254,7 @@ private fun ArenaPlayerNode(player: Player, modifier: Modifier = Modifier) {
                 .padding(horizontal = 6.dp, vertical = 1.dp),
         ) {
             Text(
-                text = "${player.score.grouped()} PTS",
+                text = "0 PTS",
                 style = MaterialTheme.typography.labelSmall,
                 color = tint,
             )
@@ -270,10 +270,10 @@ private fun ArenaRadarCardPreview() {
             gameTitle = "Cyberclash Shutdown",
             roundLabel = "Round 3/5",
             players = listOf(
-                Player("p1", "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald, score = 142),
-                Player("p2", "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan, score = 118),
-                Player("p3", "Marcus \"Rex\"", PlayerEmblem.Phoenix, AccentColor.Magenta, score = 95),
-                Player("p4", "Elena \"Pulse\"", PlayerEmblem.Shield, AccentColor.Violet, score = 86),
+                Player(1, "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald),
+                Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
+                Player(3, "Marcus \"Rex\"", PlayerEmblem.Phoenix, AccentColor.Magenta),
+                Player(4, "Elena \"Pulse\"", PlayerEmblem.Shield, AccentColor.Violet),
             ),
             onCenterTap = {},
         )
@@ -288,8 +288,8 @@ private fun ArenaRadarCardEmptySlotsPreview() {
             gameTitle = "Cyberclash Shutdown",
             roundLabel = "Round 1/5",
             players = listOf(
-                Player("p1", "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald, score = 0),
-                Player("p2", "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan, score = 0),
+                Player(1, "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald),
+                Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
             ),
             onCenterTap = {},
         )
