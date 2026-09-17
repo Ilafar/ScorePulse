@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.leaderboard.ui
+package com.score.pulse.leaderboard.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,14 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.EmblemAvatar
-import com.score.pulse.core.components.GlassCard
-import com.score.pulse.core.components.ScoreStatText
-import com.score.pulse.domain.model.RankingEntry
-import com.score.pulse.domain.model.containerColor
-import com.score.pulse.core.theme.PillShape
+import com.score.pulse.core.domain.model.containerColor
+import com.score.pulse.core.presentation.components.EmblemAvatar
+import com.score.pulse.core.presentation.components.GlassCard
+import com.score.pulse.core.presentation.components.ScoreStatText
+import com.score.pulse.core.presentation.theme.PillShape
+import com.score.pulse.leaderboard.domain.model.RankingEntry
 
-/** A single #1/#2/#3 podium place — [isChampion] drives the elevated, larger #1 styling. */
 @Composable
 fun PodiumPlaceCard(
     entry: RankingEntry,

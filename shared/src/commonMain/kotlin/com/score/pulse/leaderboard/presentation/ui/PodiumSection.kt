@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.leaderboard.ui
+package com.score.pulse.leaderboard.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -9,12 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.domain.model.AccentColor
-import com.score.pulse.domain.model.PlayerEmblem
-import com.score.pulse.domain.model.RankingEntry
-import com.score.pulse.core.theme.ScorePulseTheme
+import com.score.pulse.core.domain.model.AccentColor
+import com.score.pulse.core.domain.model.PlayerEmblem
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
+import com.score.pulse.leaderboard.domain.model.RankingEntry
 
-/** Top-3 podium row: #2 (left), #1 elevated (center), #3 (right). */
 @Composable
 fun PodiumSection(top3: List<RankingEntry>, modifier: Modifier = Modifier) {
     val first = top3.getOrNull(0)

@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.leaderboard.ui
+package com.score.pulse.leaderboard.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -12,12 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.components.EmblemAvatar
-import com.score.pulse.core.components.grouped
-import com.score.pulse.domain.model.RankingEntry
-import com.score.pulse.domain.model.containerColor
+import com.score.pulse.core.domain.model.containerColor
+import com.score.pulse.core.presentation.components.EmblemAvatar
+import com.score.pulse.core.presentation.components.grouped
+import com.score.pulse.leaderboard.domain.model.RankingEntry
 
-/** One rank-4-and-below leaderboard table row. */
 @Composable
 fun RankingRow(entry: RankingEntry, modifier: Modifier = Modifier) {
     val tint = entry.accent.containerColor()

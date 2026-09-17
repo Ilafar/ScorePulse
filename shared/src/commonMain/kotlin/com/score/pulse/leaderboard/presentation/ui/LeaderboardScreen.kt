@@ -1,4 +1,4 @@
-package com.score.pulse.presentation.leaderboard.ui
+package com.score.pulse.leaderboard.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.core.theme.ScorePulseTheme
-import com.score.pulse.domain.model.AccentColor
-import com.score.pulse.domain.model.PlayerEmblem
-import com.score.pulse.domain.model.RankingEntry
+import com.score.pulse.core.domain.model.AccentColor
+import com.score.pulse.core.domain.model.PlayerEmblem
+import com.score.pulse.core.presentation.theme.ScorePulseTheme
+import com.score.pulse.leaderboard.domain.model.RankingEntry
 
 @Composable
 fun LeaderboardRoot(
