@@ -7,21 +7,25 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.score.pulse.core.App
+import com.score.pulse.core.presentation.App
+import com.score.pulse.di.initKoin
 
-fun main(args: Array<String>) = application {
-    val width = args.getOrNull(0)?.toIntOrNull() ?: 1080
-    val height = args.getOrNull(1)?.toIntOrNull() ?: 2400
-    val windowState = rememberWindowState(
-        size = DpSize(width.dp, height.dp),
-        position = WindowPosition.Aligned(Alignment.CenterEnd),
-    )
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "ScorePulse",
-        state = windowState,
-        alwaysOnTop = true
-    ) {
-        App()
+fun main(args: Array<String>) {
+    initKoin()
+    application {
+        val width = args.getOrNull(0)?.toIntOrNull() ?: 1080
+        val height = args.getOrNull(1)?.toIntOrNull() ?: 2400
+        val windowState = rememberWindowState(
+            size = DpSize(width.dp, height.dp),
+            position = WindowPosition.Aligned(Alignment.CenterEnd),
+        )
+        Window(
+            onCloseRequest = ::exitApplication,
+            title = "ScorePulse",
+            state = windowState,
+            alwaysOnTop = true
+        ) {
+            App()
+        }
     }
 }
