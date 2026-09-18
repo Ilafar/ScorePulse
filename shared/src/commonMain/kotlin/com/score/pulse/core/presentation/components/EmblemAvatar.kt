@@ -14,9 +14,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.score.pulse.players.domain.model.AccentColor
-import com.score.pulse.players.domain.model.PlayerEmblem
-import com.score.pulse.players.domain.model.containerColor
+import com.score.pulse.game.domain.model.AccentColor
+import com.score.pulse.game.domain.model.PlayerEmblem
+import com.score.pulse.game.domain.model.containerColor
 
 @Composable
 fun EmblemAvatar(

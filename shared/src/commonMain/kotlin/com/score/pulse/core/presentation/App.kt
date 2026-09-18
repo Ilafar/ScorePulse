@@ -21,11 +21,11 @@ import com.score.pulse.core.presentation.components.AppDestination
 import com.score.pulse.core.presentation.snackbar.ObserveAsEvents
 import com.score.pulse.core.presentation.snackbar.SnackbarController
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
-import com.score.pulse.match.presentation.ui.MatchRoot
-import com.score.pulse.match.presentation.viewmodel.MatchViewModel
-import com.score.pulse.players.presentation.ui.AddPlayerRoot
-import com.score.pulse.stats.presentation.history.HistoryRoot
-import com.score.pulse.stats.presentation.leaderboard.LeaderboardRoot
+import com.score.pulse.game.presentation.match.ui.MatchRoot
+import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
+import com.score.pulse.game.presentation.addplayer.ui.AddPlayerRoot
+import com.score.pulse.game.presentation.history.ui.HistoryRoot
+import com.score.pulse.game.presentation.leaderboard.ui.LeaderboardRoot
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
