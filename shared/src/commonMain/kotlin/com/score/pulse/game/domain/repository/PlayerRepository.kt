@@ -8,6 +8,6 @@ import kotlinx.coroutines.flow.Flow
 interface PlayerRepository {
     fun observePlayers(): Flow<List<Player>>
     suspend fun addPlayer(player: Player): EmptyResult<DataError>
-    suspend fun removePlayer(playerId: Int): EmptyResult<DataError>
+    suspend fun deletePlayer(playerId: Int): EmptyResult<DataError>
     suspend fun clearPlayers(): EmptyResult<DataError>
 }

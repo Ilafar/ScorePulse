@@ -3,12 +3,14 @@ package com.score.pulse.di
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.score.pulse.core.data.local.AppDatabase
 import com.score.pulse.core.data.local.DatabaseFactory
-import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import com.score.pulse.game.data.repository.PlayerRepositoryImpl
 import com.score.pulse.game.domain.repository.PlayerRepository
 import com.score.pulse.game.domain.usecase.AddPlayerUseCase
+import com.score.pulse.game.domain.usecase.ClearPlayersUseCase
+import com.score.pulse.game.domain.usecase.DeletePlayerUseCase
 import com.score.pulse.game.domain.usecase.ObservePlayersUseCase
 import com.score.pulse.game.presentation.addplayer.viewmodel.AddPlayerViewModel
+import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -30,6 +32,8 @@ val sharedModule = module {
 
     factoryOf(::AddPlayerUseCase)
     factoryOf(::ObservePlayersUseCase)
+    factoryOf(::DeletePlayerUseCase)
+    factoryOf(::ClearPlayersUseCase)
 
     single { get<AppDatabase>().playerDao() }
 

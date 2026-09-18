@@ -1,5 +1,4 @@
 package com.score.pulse.game.presentation.addplayer.ui
-import com.score.pulse.game.domain.model.Player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,10 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.score.pulse.core.presentation.components.EmblemAvatar
+import com.score.pulse.game.domain.model.Player
 
-fun LazyListScope.rosterList(roster: List<Player>, onRemove: (Player) -> Unit) {
+fun LazyListScope.rosterList(roster: List<Player>, onRemove: (Int) -> Unit) {
     items(roster, key = { it.id }) { player ->
-        RosterListItem(player = player, onRemove = { onRemove(player) })
+        RosterListItem(player = player, onRemove = { onRemove(player.id) })
     }
 }
 

@@ -7,6 +7,8 @@ import com.score.pulse.core.presentation.util.toUiText
 import com.score.pulse.game.domain.error.AddPlayerError
 import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.usecase.AddPlayerUseCase
+import com.score.pulse.game.domain.usecase.ClearPlayersUseCase
+import com.score.pulse.game.domain.usecase.DeletePlayerUseCase
 import com.score.pulse.game.domain.usecase.ObservePlayersUseCase
 import com.score.pulse.game.presentation.addplayer.contract.AddPlayerEffect
 import com.score.pulse.game.presentation.addplayer.contract.AddPlayerEvent
@@ -17,7 +19,9 @@ import kotlinx.coroutines.flow.onEach
 
 class AddPlayerViewModel(
     private val addPlayerUseCase: AddPlayerUseCase,
-    private val observePlayersUseCase: ObservePlayersUseCase
+    private val deletePlayerUseCase: DeletePlayerUseCase,
+    private val observePlayersUseCase: ObservePlayersUseCase,
+    private val clearPlayersUseCase: ClearPlayersUseCase
 ) : BaseViewModel<AddPlayerEvent, AddPlayerState, AddPlayerEffect>() {
 
     init {
@@ -29,7 +33,7 @@ class AddPlayerViewModel(
     override fun handleEvent(event: AddPlayerEvent) {
         when (event) {
             AddPlayerEvent.AddPlayerClick -> addPlayer()
-            AddPlayerEvent.ClearHistoryClick -> TODO()
+            AddPlayerEvent.ClearAllPlayersClick -> deleteAllPlayers()
             is AddPlayerEvent.OnAccentChange -> {
                 setState { copy(accent = event.accent) }
             }
@@ -44,7 +48,9 @@ class AddPlayerViewModel(
                 }
             }
 
-            AddPlayerEvent.PlayerRemoveClick -> TODO()
+            is AddPlayerEvent.PlayerRemoveClick -> {
+                deletePlayer(event.playerId)
+            }
             AddPlayerEvent.ClearNameClick -> {
                 setState { copy(name = "", nameError = null) }
             }
@@ -88,6 +94,30 @@ class AddPlayerViewModel(
                     is AddPlayerError.Data -> sendSnackbar(error.error.toUiText())
                 }
             }
+        )
+    }
+
+    private fun deletePlayer(playerId: Int) {
+        launchWithResult(
+            block = {
+                deletePlayerUseCase(playerId)
+            },
+            onSuccess = {
+                sendSnackbar("Player removed successfully")
+            },
+            onError = { error -> sendSnackbar(error.toUiText()) },
+        )
+    }
+
+    private fun deleteAllPlayers() {
+        launchWithResult(
+            block = {
+                clearPlayersUseCase()
+            },
+            onSuccess = {
+                sendSnackbar("All players removed successfully")
+            },
+            onError = { error -> sendSnackbar(error.toUiText()) },
         )
     }
 }

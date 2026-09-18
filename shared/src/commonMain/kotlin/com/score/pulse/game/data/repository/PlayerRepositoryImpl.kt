@@ -30,7 +30,7 @@ class PlayerRepositoryImpl(
         }.asEmptyDataResult()
     }
 
-    override suspend fun removePlayer(playerId: Int): EmptyResult<DataError> {
+    override suspend fun deletePlayer(playerId: Int): EmptyResult<DataError> {
         return safeDbCall {
             playerDao.deleteById(playerId)
         }.asEmptyDataResult()

@@ -6,3 +6,7 @@ import com.score.pulse.core.domain.error.AppResult
 abstract class BaseUseCase<in Params, out OutData, out OutError : AppError> {
     abstract suspend operator fun invoke(params: Params): AppResult<OutData, OutError>
 }
+
+suspend operator fun <OutData, OutError : AppError> BaseUseCase<Unit, OutData, OutError>.invoke(): AppResult<OutData, OutError> {
+    return invoke(Unit)
+}

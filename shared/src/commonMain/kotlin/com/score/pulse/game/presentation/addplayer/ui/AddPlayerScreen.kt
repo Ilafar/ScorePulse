@@ -119,23 +119,25 @@ private fun AddPlayerScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
         }
-        item {
-            SectionHeader(
-                title = "Player Management",
-                icon = Icons.Filled.Groups,
-                style = MaterialTheme.typography.headlineSmall,
-                trailing = {
-                    Text(
-                        text = "${roster.size} Player${if (roster.size == 1) "" else "s"}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                },
-            )
-        }
-        rosterList(roster = roster, onRemove = { onEvent(AddPlayerEvent.PlayerRemoveClick) })
-        item {
-            DangerZoneCard(onConfirmClear = { onEvent(AddPlayerEvent.ClearHistoryClick) })
+        if (!state.isRosterEmpty){
+            item {
+                SectionHeader(
+                    title = "Player Management",
+                    icon = Icons.Filled.Groups,
+                    style = MaterialTheme.typography.headlineSmall,
+                    trailing = {
+                        Text(
+                            text = "${roster.size} Player${if (roster.size == 1) "" else "s"}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                )
+            }
+            rosterList(roster = roster, onRemove = { onEvent(AddPlayerEvent.PlayerRemoveClick(it)) })
+            item {
+                DangerZoneCard(onConfirmClear = { onEvent(AddPlayerEvent.ClearAllPlayersClick) })
+            }
         }
     }
 }
