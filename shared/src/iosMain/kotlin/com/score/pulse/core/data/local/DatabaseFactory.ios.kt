@@ -11,7 +11,7 @@ import platform.Foundation.NSUserDomainMask
 
 actual class DatabaseFactory {
     actual fun create(): RoomDatabase.Builder<AppDatabase> {
-        val dbFilePath = documentDirectory() + "/my_room.db"
+        val dbFilePath = documentDirectory() + "/" + AppDatabase.DB_NAME
         return Room.databaseBuilder<AppDatabase>(
             name = dbFilePath,
         )

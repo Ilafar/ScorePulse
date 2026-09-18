@@ -4,6 +4,8 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
+import com.score.pulse.players.data.local.PlayerDao
+import com.score.pulse.players.data.local.PlayerEntity
 
 @Database(entities = [PlayerEntity::class], version = 1, exportSchema = false)
 @ConstructedBy(AppDatabaseConstructor::class)

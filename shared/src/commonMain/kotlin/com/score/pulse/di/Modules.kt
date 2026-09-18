@@ -1,14 +1,14 @@
 package com.score.pulse.di
 
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.score.pulse.addplayer.domain.usecase.AddPlayerUseCase
-import com.score.pulse.addplayer.domain.usecase.ObservePlayersUseCase
-import com.score.pulse.addplayer.presentation.viewmodel.AddPlayerViewModel
 import com.score.pulse.core.data.local.AppDatabase
 import com.score.pulse.core.data.local.DatabaseFactory
-import com.score.pulse.core.data.repository.PlayerRepositoryImpl
-import com.score.pulse.core.domain.repository.PlayerRepository
-import com.score.pulse.home.presentation.viewmodel.HomeViewModel
+import com.score.pulse.match.presentation.viewmodel.MatchViewModel
+import com.score.pulse.players.data.repository.PlayerRepositoryImpl
+import com.score.pulse.players.domain.repository.PlayerRepository
+import com.score.pulse.players.domain.usecase.AddPlayerUseCase
+import com.score.pulse.players.domain.usecase.ObservePlayersUseCase
+import com.score.pulse.players.presentation.viewmodel.AddPlayerViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -19,7 +19,7 @@ import org.koin.dsl.module
 expect val platformModule: Module
 
 val sharedModule = module {
-    viewModelOf(::HomeViewModel)
+    viewModelOf(::MatchViewModel)
     viewModelOf(::AddPlayerViewModel)
 
     single {
