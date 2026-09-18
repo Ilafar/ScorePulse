@@ -112,11 +112,13 @@ private fun AddPlayerScreen(
             )
         }
         item {
+            val buttonText = if (state.isRosterFull) "Roster Full (10 Max)" else "Add Player to Roster"
             GradientPrimaryButton(
-                text = "Add Player to Roster",
+                text = buttonText,
                 icon = Icons.Filled.PersonAdd,
                 onClick = { onEvent(AddPlayerEvent.AddPlayerClick) },
                 modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isRosterFull
             )
         }
         if (!state.isRosterEmpty){
@@ -126,8 +128,9 @@ private fun AddPlayerScreen(
                     icon = Icons.Filled.Groups,
                     style = MaterialTheme.typography.headlineSmall,
                     trailing = {
+                        // TODO: Plurals here
                         Text(
-                            text = "${roster.size} Player${if (roster.size == 1) "" else "s"}",
+                            text = "${roster.size}/10 Player${if (roster.size == 1) "" else "s"}",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

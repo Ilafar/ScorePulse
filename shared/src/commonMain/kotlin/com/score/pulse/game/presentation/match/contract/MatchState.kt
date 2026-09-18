@@ -1,8 +1,8 @@
 package com.score.pulse.game.presentation.match.contract
-import com.score.pulse.game.domain.model.Game
-import com.score.pulse.game.domain.model.Player
 
 import com.score.pulse.core.base.UiState
+import com.score.pulse.game.domain.model.Game
+import com.score.pulse.game.domain.model.Player
 
 data class MatchState(
     val game: Game = Game(),
@@ -13,6 +13,7 @@ data class MatchState(
     val isGameResultVisible: Boolean = false,
     val isStartGameDialogVisible: Boolean = false,
 ) : UiState {
+    val isGameStarted : Boolean get() = game.name.isNotEmpty()
     val isFinalRound: Boolean get() = currentRound >= game.maxRounds
     val hasMinimumPlayers: Boolean get() = players.size >= 2
     val roundLabel: String

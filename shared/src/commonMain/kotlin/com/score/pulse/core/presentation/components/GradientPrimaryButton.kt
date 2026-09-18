@@ -26,6 +26,7 @@ fun GradientPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
+    enabled: Boolean = true,
 ) {
     val gradient = Brush.horizontalGradient(
         listOf(
@@ -34,20 +35,33 @@ fun GradientPrimaryButton(
             MaterialTheme.colorScheme.secondary,
         ),
     )
+
+    val disabledGradient = Brush.horizontalGradient(
+        listOf(
+            MaterialTheme.colorScheme.surfaceContainerHigh,
+            MaterialTheme.colorScheme.surfaceContainerHigh
+        )
+    )
+    val containerColor = if (enabled) gradient else disabledGradient
+    val contentColor = if (enabled) MaterialTheme.colorScheme.onPrimary
+    else MaterialTheme.colorScheme.onSurfaceVariant
     Box(
         modifier = modifier
             .height(48.dp)
             .clip(MaterialTheme.shapes.medium)
-            .background(gradient)
-            .clickable(onClick = onClick),
+            .background(containerColor)
+            .clickable(onClick = onClick, enabled = enabled),
         contentAlignment = Alignment.Center,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
             if (icon != null) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = contentColor,
                     modifier = Modifier.size(20.dp),
                 )
                 Spacer(Modifier.width(8.dp))
@@ -55,7 +69,7 @@ fun GradientPrimaryButton(
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = contentColor,
             )
         }
     }

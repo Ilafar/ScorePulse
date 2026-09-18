@@ -1,13 +1,24 @@
 package com.score.pulse.game.presentation.match.viewmodel
+
+import androidx.lifecycle.viewModelScope
+import com.score.pulse.core.base.BaseViewModel
+import com.score.pulse.game.domain.model.Game
+import com.score.pulse.game.domain.model.Player
+import com.score.pulse.game.domain.usecase.ObservePlayersUseCase
 import com.score.pulse.game.presentation.match.contract.MatchEffect
 import com.score.pulse.game.presentation.match.contract.MatchEvent
 import com.score.pulse.game.presentation.match.contract.MatchState
-import com.score.pulse.game.domain.model.Game
-import com.score.pulse.game.domain.model.Player
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-import com.score.pulse.core.base.BaseViewModel
+class MatchViewModel(
+    private val observePlayersUseCase: ObservePlayersUseCase
+) : BaseViewModel<MatchEvent, MatchState, MatchEffect>() {
 
-class MatchViewModel : BaseViewModel<MatchEvent, MatchState, MatchEffect>() {
+    init {
+        observePlayers()
+    }
 
     override fun createInitialState(): MatchState = MatchState()
 
@@ -85,6 +96,15 @@ class MatchViewModel : BaseViewModel<MatchEvent, MatchState, MatchEffect>() {
                 setEffect { MatchEffect.NavigateToAddPlayer }
             }
         }
+    }
+
+    private fun observePlayers() {
+        observePlayersUseCase()
+            .catch { sendSnackbar("Failed to observe players") }
+            .onEach { roster ->
+                setState { copy(players = roster) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun adjustPlayerPt(

@@ -14,4 +14,5 @@ data class AddPlayerState(
     val roster: List<Player> = emptyList(),
 ) : UiState {
     val isRosterEmpty: Boolean get() = roster.isEmpty()
+    val isRosterFull: Boolean get() = roster.size == 10
 }

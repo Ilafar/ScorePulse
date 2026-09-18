@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -22,6 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,12 +87,24 @@ fun ArenaRadarCard(
                     .size(280.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                ArenaRings(players)
+                val displayPlayers = players.take(10)
+                val slotCount = if (displayPlayers.isEmpty()) 4 else displayPlayers.size
+                val radius = 100.dp
 
-                ArenaSlot(players.getOrNull(0), Modifier.align(Alignment.TopCenter))
-                ArenaSlot(players.getOrNull(1), Modifier.align(Alignment.CenterEnd))
-                ArenaSlot(players.getOrNull(2), Modifier.align(Alignment.BottomCenter))
-                ArenaSlot(players.getOrNull(3), Modifier.align(Alignment.CenterStart))
+                ArenaRings(displayPlayers)
+
+                for (i in 0 until slotCount) {
+                    val angleInRadians = -PI / 2.0 + (i * 2.0 * PI / slotCount)
+                    val xOffset = (cos(angleInRadians) * radius.value).dp
+                    val yOffset = (sin(angleInRadians) * radius.value).dp
+
+                    ArenaSlot(
+                        player = displayPlayers.getOrNull(i),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .offset(x = xOffset, y = yOffset),
+                    )
+                }
 
                 ArenaVsBadge(onClick = onCenterTap)
             }
@@ -106,12 +122,18 @@ fun ArenaRadarCard(
 @Composable
 private fun ArenaRings(players: List<Player>) {
     val trackColor = MaterialTheme.colorScheme.outlineVariant
-    val dirColors = listOf(
-        players.getOrNull(0)?.accent?.containerColor() ?: MaterialTheme.colorScheme.primary,
-        players.getOrNull(1)?.accent?.containerColor() ?: MaterialTheme.colorScheme.secondary,
-        players.getOrNull(2)?.accent?.containerColor() ?: MaterialTheme.colorScheme.tertiary,
-        players.getOrNull(3)?.accent?.containerColor() ?: MaterialTheme.colorScheme.tertiaryFixedDim,
+    val fallbackColors = listOf(
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.tertiary,
+        MaterialTheme.colorScheme.tertiaryFixedDim,
     )
+    val displayPlayers = players.take(10)
+    val slotCount = if (displayPlayers.isEmpty()) 4 else displayPlayers.size
+    val dirColors = List(slotCount) { i ->
+        displayPlayers.getOrNull(i)?.accent?.containerColor() ?: fallbackColors[i % fallbackColors.size]
+    }
+
     Canvas(modifier = Modifier.fillMaxSize()) {
         val outerRadius = this.size.minDimension * 0.36f
         val innerRadius = this.size.minDimension * 0.255f
@@ -129,30 +151,18 @@ private fun ArenaRings(players: List<Player>) {
         val lineLength = this.size.minDimension * 0.14f
         val lineGap = this.size.minDimension * 0.17f
         val strokeWidth = 1.5.dp.toPx()
-        drawLine(
-            dirColors[0].copy(alpha = 0.4f),
-            Offset(center.x, center.y - lineGap - lineLength),
-            Offset(center.x, center.y - lineGap),
-            strokeWidth,
-        )
-        drawLine(
-            dirColors[1].copy(alpha = 0.4f),
-            Offset(center.x + lineGap + lineLength, center.y),
-            Offset(center.x + lineGap, center.y),
-            strokeWidth,
-        )
-        drawLine(
-            dirColors[2].copy(alpha = 0.4f),
-            Offset(center.x, center.y + lineGap + lineLength),
-            Offset(center.x, center.y + lineGap),
-            strokeWidth,
-        )
-        drawLine(
-            dirColors[3].copy(alpha = 0.4f),
-            Offset(center.x - lineGap - lineLength, center.y),
-            Offset(center.x - lineGap, center.y),
-            strokeWidth,
-        )
+
+        for (i in 0 until slotCount) {
+            val angleInRadians = -PI / 2.0 + (i * 2.0 * PI / slotCount)
+            val cosVal = cos(angleInRadians).toFloat()
+            val sinVal = sin(angleInRadians).toFloat()
+            drawLine(
+                color = dirColors[i].copy(alpha = 0.4f),
+                start = Offset(center.x + cosVal * (lineGap + lineLength), center.y + sinVal * (lineGap + lineLength)),
+                end = Offset(center.x + cosVal * lineGap, center.y + sinVal * lineGap),
+                strokeWidth = strokeWidth,
+            )
+        }
     }
 }
 

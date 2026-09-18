@@ -1,9 +1,4 @@
 package com.score.pulse.game.presentation.match.ui
-import com.score.pulse.game.presentation.match.contract.MatchEffect
-import com.score.pulse.game.presentation.match.contract.MatchEvent
-import com.score.pulse.game.presentation.match.contract.MatchState
-import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
-import com.score.pulse.game.presentation.history.ui.MatchResultCard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +25,11 @@ import com.score.pulse.core.presentation.components.GradientPrimaryButton
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
 import com.score.pulse.game.domain.model.MatchParticipant
 import com.score.pulse.game.domain.model.MatchRecord
+import com.score.pulse.game.presentation.history.ui.MatchResultCard
+import com.score.pulse.game.presentation.match.contract.MatchEffect
+import com.score.pulse.game.presentation.match.contract.MatchEvent
+import com.score.pulse.game.presentation.match.contract.MatchState
+import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -70,7 +71,8 @@ private fun MatchScreen(
         modifier = modifier.fillMaxSize(),
         state = listState,
         contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
             ArenaRadarCard(
@@ -80,22 +82,31 @@ private fun MatchScreen(
                 onCenterTap = { onEvent(MatchEvent.OpenStartGameDialog) },
             )
         }
-        items(state.players, key = { it.id }) { player ->
-            PlayerScoreEntryCard(
-                player = player,
-                onAdjust = { delta -> onEvent(MatchEvent.AdjustScoreClicked(player.id, delta)) },
-                onCustomEdit = { onEvent(MatchEvent.OpenEditScoreDialog(player.id)) },
-            )
-        }
-        item {
-            if (state.hasMinimumPlayers)
-            GameActionBar(
-                currentRound = state.currentRound,
-                isFinalRound = state.isFinalRound,
-                onFinishMatch = { onEvent(MatchEvent.OpenGameResultDialog) },
-                onLockRound = { onEvent(MatchEvent.OpenLockRoundDialog) },
-            )
-        }
+
+        if (state.isGameStarted)
+            items(state.players, key = { it.id }) { player ->
+                PlayerScoreEntryCard(
+                    player = player,
+                    onAdjust = { delta ->
+                        onEvent(
+                            MatchEvent.AdjustScoreClicked(
+                                player.id,
+                                delta
+                            )
+                        )
+                    },
+                    onCustomEdit = { onEvent(MatchEvent.OpenEditScoreDialog(player.id)) },
+                )
+            }
+        if (state.isGameStarted)
+            item {
+                GameActionBar(
+                    currentRound = state.currentRound,
+                    isFinalRound = state.isFinalRound,
+                    onFinishMatch = { onEvent(MatchEvent.OpenGameResultDialog) },
+                    onLockRound = { onEvent(MatchEvent.OpenLockRoundDialog) },
+                )
+            }
         item {
             if (!state.hasMinimumPlayers) {
                 NoPlayerInfoBanner(onAddPlayerClick = { onEvent(MatchEvent.AddPlayerClicked) })
