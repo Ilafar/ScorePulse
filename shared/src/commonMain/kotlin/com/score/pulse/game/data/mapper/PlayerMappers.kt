@@ -1,6 +1,6 @@
 package com.score.pulse.game.data.mapper
 
-import com.score.pulse.game.data.local.PlayerEntity
+import com.score.pulse.game.data.local.entity.PlayerEntity
 import com.score.pulse.game.domain.model.AccentColor
 import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.model.PlayerEmblem

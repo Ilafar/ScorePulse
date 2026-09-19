@@ -1,4 +1,4 @@
-package com.score.pulse.game.domain.usecase
+package com.score.pulse.game.domain.usecase.add
 
 import com.score.pulse.core.domain.error.AppResult
 import com.score.pulse.core.domain.usecase.BaseUseCase

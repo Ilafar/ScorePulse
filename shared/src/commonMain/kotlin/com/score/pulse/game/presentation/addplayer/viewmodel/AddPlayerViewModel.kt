@@ -6,10 +6,10 @@ import com.score.pulse.core.presentation.util.UiText
 import com.score.pulse.core.presentation.util.toUiText
 import com.score.pulse.game.domain.error.AddPlayerError
 import com.score.pulse.game.domain.model.Player
-import com.score.pulse.game.domain.usecase.AddPlayerUseCase
-import com.score.pulse.game.domain.usecase.ClearPlayersUseCase
-import com.score.pulse.game.domain.usecase.DeletePlayerUseCase
-import com.score.pulse.game.domain.usecase.ObservePlayersUseCase
+import com.score.pulse.game.domain.usecase.add.AddPlayerUseCase
+import com.score.pulse.game.domain.usecase.clear.ClearPlayersUseCase
+import com.score.pulse.game.domain.usecase.delete.DeletePlayerUseCase
+import com.score.pulse.game.domain.usecase.observe.ObservePlayersUseCase
 import com.score.pulse.game.presentation.addplayer.contract.AddPlayerEffect
 import com.score.pulse.game.presentation.addplayer.contract.AddPlayerEvent
 import com.score.pulse.game.presentation.addplayer.contract.AddPlayerState

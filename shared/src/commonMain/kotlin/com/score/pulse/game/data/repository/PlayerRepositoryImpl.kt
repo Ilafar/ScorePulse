@@ -4,7 +4,7 @@ import com.score.pulse.core.data.local.safeDbCall
 import com.score.pulse.core.domain.error.DataError
 import com.score.pulse.core.domain.error.EmptyResult
 import com.score.pulse.core.domain.error.asEmptyDataResult
-import com.score.pulse.game.data.local.PlayerDao
+import com.score.pulse.game.data.local.dao.PlayerDao
 import com.score.pulse.game.data.mapper.toDomain
 import com.score.pulse.game.data.mapper.toEntity
 import com.score.pulse.game.domain.model.Player

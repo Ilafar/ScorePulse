@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.score.pulse.core.presentation.components.GlassCard
 import com.score.pulse.core.presentation.components.GradientPrimaryButton
+import com.score.pulse.core.presentation.util.supportingText
 
 @Composable
 fun CustomScoreDialog(
@@ -56,14 +58,15 @@ fun CustomScoreDialog(
 
 @Composable
 fun StartGame(
-    onStartGame: (String, Int) -> Unit,
-    onDismiss: () -> Unit
+    onStartGame: (String, String) -> Unit, onDismiss: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismiss
     ) {
-        var gameName by remember { mutableStateOf("") }
-        var totalRounds by remember { mutableStateOf("") }
+        var gameName by rememberSaveable { mutableStateOf("") }
+        var totalRounds by rememberSaveable { mutableStateOf("") }
+        var nameError by rememberSaveable { mutableStateOf<String?>(null) }
+        var totalRoundsError by rememberSaveable { mutableStateOf<String?>(null) }
         GlassCard {
             Column(
                 modifier = Modifier.padding(12.dp),
@@ -74,34 +77,52 @@ fun StartGame(
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = gameName,
-                    onValueChange = { gameName = it },
+                    onValueChange = {
+                        gameName = it
+                        nameError = null
+                    },
                     singleLine = true,
                     label = { Text("Game name") },
+                    isError = nameError != null,
+                    supportingText = supportingText(
+                        message = nameError
+                    ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text
                     )
                 )
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
                     value = totalRounds,
                     onValueChange = { input ->
-                        if (input.all { it.isDigit() }) totalRounds = input
+                        if (input.all { it.isDigit() }) {
+                            totalRounds = input
+                            totalRoundsError = null
+                        }
                     },
                     singleLine = true,
                     label = { Text("Total rounds") },
+                    isError = totalRoundsError != null,
+                    supportingText = supportingText(
+                        message = totalRoundsError,
+                    ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     )
                 )
                 Spacer(Modifier.height(12.dp))
                 GradientPrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Start new game",
-                    onClick = {
-                        val rounds = totalRounds.toIntOrNull()
-                        if (gameName.isNotBlank() && rounds != null && rounds > 0) {
-                            onStartGame(gameName, rounds)
+                    modifier = Modifier.fillMaxWidth(), text = "Start new game", onClick = {
+                        if (gameName.isBlank()) {
+                            nameError = "Game name cannot be blank"
+                            return@GradientPrimaryButton
                         }
+                        if (totalRounds.toIntOrNull() == null
+                            || totalRounds.toInt() < 1) {
+                            totalRoundsError = "Enter a valid number"
+                            return@GradientPrimaryButton
+                        }
+                        onStartGame(gameName, totalRounds)
                     }
                 )
             }

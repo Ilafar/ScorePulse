@@ -11,7 +11,7 @@ sealed class MatchEvent : UiEvent {
 
     // Click
     data class AdjustScoreClicked(val playerId: Int, val delta: Int) : MatchEvent()
-    data class StartNewGameClicked(val gameName: String, val totalRounds: Int) : MatchEvent()
+    data class StartNewGameClicked(val gameName: String, val totalRounds: String) : MatchEvent()
     data object ConfirmLockRoundClicked : MatchEvent()
     data object AddPlayerClicked : MatchEvent()
 

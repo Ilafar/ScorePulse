@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.score.pulse.core.presentation.components.GradientPrimaryButton
 import com.score.pulse.core.presentation.components.SectionHeader
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
+import com.score.pulse.core.presentation.util.supportingText
 import com.score.pulse.game.presentation.addplayer.contract.AddPlayerEvent
 import com.score.pulse.game.presentation.addplayer.contract.AddPlayerState
 import com.score.pulse.game.presentation.addplayer.viewmodel.AddPlayerViewModel
@@ -74,14 +75,9 @@ private fun AddPlayerScreen(
                         }
                     }
                 },
-                supportingText = {
-                    if (state.nameError != null) {
-                        Text(
-                            text = state.nameError.asString(),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                },
+                supportingText = supportingText(
+                    message = state.nameError?.asString(),
+                ),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -112,7 +108,8 @@ private fun AddPlayerScreen(
             )
         }
         item {
-            val buttonText = if (state.isRosterFull) "Roster Full (10 Max)" else "Add Player to Roster"
+            val buttonText =
+                if (state.isRosterFull) "Roster Full (10 Max)" else "Add Player to Roster"
             GradientPrimaryButton(
                 text = buttonText,
                 icon = Icons.Filled.PersonAdd,
@@ -121,7 +118,7 @@ private fun AddPlayerScreen(
                 enabled = !state.isRosterFull
             )
         }
-        if (!state.isRosterEmpty){
+        if (!state.isRosterEmpty) {
             item {
                 SectionHeader(
                     title = "Player Management",
@@ -137,7 +134,9 @@ private fun AddPlayerScreen(
                     },
                 )
             }
-            rosterList(roster = roster, onRemove = { onEvent(AddPlayerEvent.PlayerRemoveClick(it)) })
+            rosterList(
+                roster = roster,
+                onRemove = { onEvent(AddPlayerEvent.PlayerRemoveClick(it)) })
             item {
                 DangerZoneCard(onConfirmClear = { onEvent(AddPlayerEvent.ClearAllPlayersClick) })
             }

@@ -1,8 +1,8 @@
 package com.score.pulse.core.data.local
 
 import androidx.sqlite.SQLiteException
-import com.score.pulse.core.domain.error.DataError
 import com.score.pulse.core.domain.error.AppResult
+import com.score.pulse.core.domain.error.DataError
 import kotlinx.coroutines.CancellationException
 
 suspend inline fun <T> safeDbCall(
@@ -17,7 +17,7 @@ suspend inline fun <T> safeDbCall(
     }
 }
 
-fun Throwable.toLocalDataError(): DataError.Local {
+fun Exception.toLocalDataError(): DataError.Local {
     return when (this) {
         is SQLiteException -> {
             if (message?.contains("SQLITE_FULL", ignoreCase = true) == true ||

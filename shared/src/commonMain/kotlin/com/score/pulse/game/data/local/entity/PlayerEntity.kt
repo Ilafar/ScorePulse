@@ -1,4 +1,4 @@
-package com.score.pulse.game.data.local
+package com.score.pulse.game.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

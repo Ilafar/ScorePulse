@@ -1,8 +1,9 @@
-package com.score.pulse.game.data.local
+package com.score.pulse.game.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import com.score.pulse.game.data.local.entity.PlayerEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

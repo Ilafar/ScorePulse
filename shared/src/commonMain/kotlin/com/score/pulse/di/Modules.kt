@@ -3,12 +3,16 @@ package com.score.pulse.di
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.score.pulse.core.data.local.AppDatabase
 import com.score.pulse.core.data.local.DatabaseFactory
+import com.score.pulse.game.data.repository.GameRepositoryImpl
 import com.score.pulse.game.data.repository.PlayerRepositoryImpl
+import com.score.pulse.game.domain.repository.GameRepository
 import com.score.pulse.game.domain.repository.PlayerRepository
-import com.score.pulse.game.domain.usecase.AddPlayerUseCase
-import com.score.pulse.game.domain.usecase.ClearPlayersUseCase
-import com.score.pulse.game.domain.usecase.DeletePlayerUseCase
-import com.score.pulse.game.domain.usecase.ObservePlayersUseCase
+import com.score.pulse.game.domain.usecase.add.AddNewGameUseCase
+import com.score.pulse.game.domain.usecase.add.AddPlayerUseCase
+import com.score.pulse.game.domain.usecase.clear.ClearPlayersUseCase
+import com.score.pulse.game.domain.usecase.delete.DeletePlayerUseCase
+import com.score.pulse.game.domain.usecase.observe.ObserveActiveGameUseCase
+import com.score.pulse.game.domain.usecase.observe.ObservePlayersUseCase
 import com.score.pulse.game.presentation.addplayer.viewmodel.AddPlayerViewModel
 import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import org.koin.core.module.Module
@@ -31,11 +35,16 @@ val sharedModule = module {
     }
 
     factoryOf(::AddPlayerUseCase)
+    factoryOf(::AddNewGameUseCase)
     factoryOf(::ObservePlayersUseCase)
+    factoryOf(::ObserveActiveGameUseCase)
     factoryOf(::DeletePlayerUseCase)
     factoryOf(::ClearPlayersUseCase)
 
     single { get<AppDatabase>().playerDao() }
+    single { get<AppDatabase>().gameDao() }
+    single { get<AppDatabase>().playerGameDao() }
 
     singleOf(::PlayerRepositoryImpl).bind<PlayerRepository>()
+    singleOf(::GameRepositoryImpl).bind<GameRepository>()
 }
