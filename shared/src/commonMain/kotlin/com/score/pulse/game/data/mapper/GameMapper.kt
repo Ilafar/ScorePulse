@@ -7,6 +7,7 @@ fun Game.toEntity(): GameEntity {
     return GameEntity(
         id = id,
         name = name,
+        currentRound = currentRound,
         maxRounds = maxRounds,
         status = status,
         createdAt = createdAt
@@ -17,6 +18,7 @@ fun GameEntity.toDomain(): Game {
     return Game(
         id = id,
         name = name,
+        currentRound = currentRound,
         maxRounds = maxRounds,
         status = status,
         createdAt = createdAt

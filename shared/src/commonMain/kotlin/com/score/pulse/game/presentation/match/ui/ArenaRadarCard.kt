@@ -1,5 +1,4 @@
 package com.score.pulse.game.presentation.match.ui
-import com.score.pulse.game.domain.model.Player
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -17,15 +16,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,14 +37,20 @@ import com.score.pulse.core.presentation.components.EmblemAvatar
 import com.score.pulse.core.presentation.components.GlassCard
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
 import com.score.pulse.game.domain.model.AccentColor
+import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.model.PlayerEmblem
+import com.score.pulse.game.domain.model.PlayerWithStats
 import com.score.pulse.game.domain.model.containerColor
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun ArenaRadarCard(
     gameTitle: String,
     roundLabel: String,
-    players: List<Player>,
+    players: List<PlayerWithStats>,
+    isGameStarted: Boolean = false,
     onCenterTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -61,7 +64,10 @@ fun ArenaRadarCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Filled.TrackChanges,
                         contentDescription = null,
@@ -106,11 +112,17 @@ fun ArenaRadarCard(
                     )
                 }
 
-                ArenaVsBadge(onClick = onCenterTap)
+                val accentColors = displayPlayers.map { it.player.accent }
+
+                ArenaVsBadge(
+                    isGameStarted = isGameStarted,
+                    accentColors =  accentColors,
+                    onClick = onCenterTap
+                )
             }
 
             Text(
-                text = "Tap center VS to start a new game",
+                text = if (isGameStarted) "Tap center Finish to complete game" else "Tap center Start to start a new game",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -120,7 +132,7 @@ fun ArenaRadarCard(
 }
 
 @Composable
-private fun ArenaRings(players: List<Player>) {
+private fun ArenaRings(players: List<PlayerWithStats>) {
     val trackColor = MaterialTheme.colorScheme.outlineVariant
     val fallbackColors = listOf(
         MaterialTheme.colorScheme.primary,
@@ -131,7 +143,8 @@ private fun ArenaRings(players: List<Player>) {
     val displayPlayers = players.take(10)
     val slotCount = if (displayPlayers.isEmpty()) 4 else displayPlayers.size
     val dirColors = List(slotCount) { i ->
-        displayPlayers.getOrNull(i)?.accent?.containerColor() ?: fallbackColors[i % fallbackColors.size]
+        displayPlayers.getOrNull(i)?.player?.accent?.containerColor()
+            ?: fallbackColors[i % fallbackColors.size]
     }
 
     Canvas(modifier = Modifier.fillMaxSize()) {
@@ -141,7 +154,10 @@ private fun ArenaRings(players: List<Player>) {
         drawCircle(
             color = trackColor.copy(alpha = 0.4f),
             radius = outerRadius,
-            style = Stroke(width = 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 10f))),
+            style = Stroke(
+                width = 1.5.dp.toPx(),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 10f))
+            ),
         )
         drawCircle(
             color = trackColor.copy(alpha = 0.3f),
@@ -158,7 +174,10 @@ private fun ArenaRings(players: List<Player>) {
             val sinVal = sin(angleInRadians).toFloat()
             drawLine(
                 color = dirColors[i].copy(alpha = 0.4f),
-                start = Offset(center.x + cosVal * (lineGap + lineLength), center.y + sinVal * (lineGap + lineLength)),
+                start = Offset(
+                    center.x + cosVal * (lineGap + lineLength),
+                    center.y + sinVal * (lineGap + lineLength)
+                ),
                 end = Offset(center.x + cosVal * lineGap, center.y + sinVal * lineGap),
                 strokeWidth = strokeWidth,
             )
@@ -167,35 +186,39 @@ private fun ArenaRings(players: List<Player>) {
 }
 
 @Composable
-private fun ArenaVsBadge(onClick: () -> Unit) {
+private fun ArenaVsBadge(
+    isGameStarted: Boolean,
+    accentColors: List<AccentColor>,
+    onClick: () -> Unit
+) {
+    val gradientColors = if (accentColors.isNotEmpty())
+        accentColors.map { it.containerColor().copy(alpha = 0.6f) }
+    else
+        listOf(
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
+            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f),
+        )
+
     Box(
         modifier = Modifier
             .size(96.dp)
             .clip(CircleShape)
-            .background(
-                Brush.linearGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
-                        MaterialTheme.colorScheme.tertiary.copy(alpha = 0.4f),
-                    ),
-                ),
-            )
+            .background(Brush.linearGradient(gradientColors))
             .padding(6.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                imageVector = Icons.Filled.Bolt,
-                contentDescription = "Start new game",
+                imageVector = if (isGameStarted) Icons.Filled.Flag else Icons.Filled.Bolt,
+                contentDescription = if (isGameStarted) "Finish game" else "Start new game",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(26.dp),
             )
             Text(
-                text = "Start",
+                text = if (isGameStarted) "Finish" else "Start",
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -204,7 +227,7 @@ private fun ArenaVsBadge(onClick: () -> Unit) {
 }
 
 @Composable
-private fun ArenaSlot(player: Player?, modifier: Modifier = Modifier) {
+private fun ArenaSlot(player: PlayerWithStats?, modifier: Modifier = Modifier) {
     if (player != null) {
         ArenaPlayerNode(player, modifier)
     } else {
@@ -240,17 +263,17 @@ private fun ArenaEmptySlotNode(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ArenaPlayerNode(player: Player, modifier: Modifier = Modifier) {
-    val tint = player.accent.containerColor()
+private fun ArenaPlayerNode(player: PlayerWithStats, modifier: Modifier = Modifier) {
+    val tint = player.player.accent.containerColor()
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         EmblemAvatar(
-            emblem = player.emblem,
-            accent = player.accent,
+            emblem = player.player.emblem,
+            accent = player.player.accent,
             size = 48.dp,
             showStatusDot = true,
         )
         Text(
-            text = player.name,
+            text = player.player.name,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(top = 4.dp),
@@ -263,7 +286,7 @@ private fun ArenaPlayerNode(player: Player, modifier: Modifier = Modifier) {
                 .padding(horizontal = 6.dp, vertical = 1.dp),
         ) {
             Text(
-                text = "0 PTS",
+                text = "${player.score} PTS",
                 style = MaterialTheme.typography.labelSmall,
                 color = tint,
             )
@@ -279,11 +302,39 @@ private fun ArenaRadarCardPreview() {
             gameTitle = "Cyberclash Shutdown",
             roundLabel = "Round 3/5",
             players = listOf(
-                Player(1, "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald),
-                Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
-                Player(3, "Marcus \"Rex\"", PlayerEmblem.Phoenix, AccentColor.Magenta),
-                Player(4, "Elena \"Pulse\"", PlayerEmblem.Shield, AccentColor.Violet),
+                PlayerWithStats(
+                    Player(
+                        1,
+                        "Alex \"Viper\"",
+                        PlayerEmblem.Gamepad,
+                        AccentColor.Emerald
+                    ), wins = 0, losses = 0, score = 150, rank = 1
+                ),
+                PlayerWithStats(
+                    Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
+                    wins = 0,
+                    losses = 0,
+                    score = 120,
+                    rank = 2
+                ),
+                PlayerWithStats(
+                    Player(
+                        3,
+                        "Marcus \"Rex\"",
+                        PlayerEmblem.Phoenix,
+                        AccentColor.Magenta
+                    ), wins = 0, losses = 0, score = 80, rank = 3
+                ),
+                PlayerWithStats(
+                    Player(
+                        4,
+                        "Elena \"Pulse\"",
+                        PlayerEmblem.Shield,
+                        AccentColor.Violet
+                    ), wins = 0, losses = 0, score = 60, rank = 4
+                ),
             ),
+            isGameStarted = true,
             onCenterTap = {},
         )
     }
@@ -297,9 +348,23 @@ private fun ArenaRadarCardEmptySlotsPreview() {
             gameTitle = "Cyberclash Shutdown",
             roundLabel = "Round 1/5",
             players = listOf(
-                Player(1, "Alex \"Viper\"", PlayerEmblem.Gamepad, AccentColor.Emerald),
-                Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
+                PlayerWithStats(
+                    Player(
+                        1,
+                        "Alex \"Viper\"",
+                        PlayerEmblem.Gamepad,
+                        AccentColor.Emerald
+                    ), wins = 0, losses = 0, score = 0, rank = 1
+                ),
+                PlayerWithStats(
+                    Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
+                    wins = 0,
+                    losses = 0,
+                    score = 0,
+                    rank = 2
+                ),
             ),
+            isGameStarted = false,
             onCenterTap = {},
         )
     }

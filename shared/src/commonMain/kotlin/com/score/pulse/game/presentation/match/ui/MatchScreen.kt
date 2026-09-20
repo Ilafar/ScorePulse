@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -79,33 +81,41 @@ private fun MatchScreen(
                 gameTitle = state.game.name,
                 roundLabel = state.roundLabel,
                 players = state.players,
-                onCenterTap = { onEvent(MatchEvent.OpenStartGameDialog) },
+                isGameStarted = state.isGameStarted,
+                onCenterTap = {
+                    if (state.isGameStarted) {
+                        onEvent(MatchEvent.FinishGameClicked)
+                    } else {
+                        onEvent(MatchEvent.OpenStartGameDialog)
+                    }
+                },
             )
         }
 
         if (state.isGameStarted)
-            items(state.players, key = { it.id }) { player ->
+            items(state.players, key = { it.player.id }) { player ->
                 PlayerScoreEntryCard(
                     player = player,
                     onAdjust = { delta ->
                         onEvent(
                             MatchEvent.AdjustScoreClicked(
-                                player.id,
+                                player.player.id,
                                 delta
                             )
                         )
                     },
-                    onCustomEdit = { onEvent(MatchEvent.OpenEditScoreDialog(player.id)) },
+                    onCustomEdit = { onEvent(MatchEvent.OpenEditScoreDialog(player.player.id)) },
                 )
             }
-        if (state.isGameStarted)
+        if (state.isGameStarted && state.hasMinimumPlayers)
             item {
-                GameActionBar(
-                    currentRound = state.currentRound,
-                    isFinalRound = state.isFinalRound,
-                    onFinishMatch = { onEvent(MatchEvent.OpenGameResultDialog) },
-                    onLockRound = { onEvent(MatchEvent.OpenLockRoundDialog) },
-                )
+                if (!state.isFinalRound)
+                    GradientPrimaryButton(
+                        modifier = Modifier.fillMaxSize(),
+                        text = "Lock Round ${state.game.currentRound}",
+                        onClick = { onEvent(MatchEvent.OpenLockRoundDialog) },
+                        icon = Icons.Filled.DoneAll,
+                    )
             }
         item {
             if (!state.hasMinimumPlayers) {
@@ -139,11 +149,11 @@ private fun MatchScreen(
                         dateLabel = "Today, 8:45 PM",
                         participants = state.players.map {
                             MatchParticipant(
-                                name = it.name,
-                                score = 0,
-                                rank = 1,
-                                accent = it.accent,
-                                emblem = it.emblem
+                                name = it.player.name,
+                                score = it.score,
+                                rank = it.rank,
+                                accent = it.player.accent,
+                                emblem = it.player.emblem
                             )
                         }
                     )
@@ -165,20 +175,20 @@ private fun MatchScreen(
             text = "Reset player points for next round?",
             dismissText = "Continue without reset",
             confirmText = "Reset",
-            onDismiss = { onEvent(MatchEvent.DismissLockRound) },
-            onConfirm = { onEvent(MatchEvent.ConfirmLockRoundClicked) },
+            onDismiss = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = false)) },
+            onConfirm = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = true)) },
         )
     }
 
     val editingPlayer = state.editingPlayer
     if (editingPlayer != null) {
         CustomScoreDialog(
-            currentScore = 0,
+            currentScore = editingPlayer.score,
             onDismiss = { onEvent(MatchEvent.DismissEdit) },
             onConfirm = { newScore ->
                 onEvent(
                     MatchEvent.AdjustScoreClicked(
-                        editingPlayer.id,
+                        editingPlayer.player.id,
                         newScore
                     )
                 )

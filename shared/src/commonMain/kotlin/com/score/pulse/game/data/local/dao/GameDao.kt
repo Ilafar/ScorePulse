@@ -30,4 +30,7 @@ interface GameDao {
 
     @Query("DELETE FROM games WHERE status = 'IN_PROGRESS'")
     suspend fun deleteActiveGame()
+
+    @Query("UPDATE games SET currentRound = currentRound + 1 WHERE status = 'IN_PROGRESS'")
+    suspend fun lockRound()
 }

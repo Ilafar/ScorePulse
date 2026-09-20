@@ -4,10 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.score.pulse.core.base.BaseViewModel
 import com.score.pulse.core.presentation.util.toUiText
 import com.score.pulse.game.domain.model.Game
-import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.usecase.add.AddNewGameUseCase
+import com.score.pulse.game.domain.usecase.add.AdjustScoreUseCase
+import com.score.pulse.game.domain.usecase.add.LockRoundUseCase
+import com.score.pulse.game.domain.usecase.complete.CompleteActiveGameUseCase
 import com.score.pulse.game.domain.usecase.observe.ObserveActiveGameUseCase
-import com.score.pulse.game.domain.usecase.observe.ObservePlayersUseCase
+import com.score.pulse.game.domain.usecase.observe.ObservePlayersWithStatsUseCase
 import com.score.pulse.game.presentation.match.contract.MatchEffect
 import com.score.pulse.game.presentation.match.contract.MatchEvent
 import com.score.pulse.game.presentation.match.contract.MatchState
@@ -16,9 +18,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class MatchViewModel(
-    private val observePlayersUseCase: ObservePlayersUseCase,
+    private val observePlayersWithStatsUseCase: ObservePlayersWithStatsUseCase,
     private val observeActiveGameUseCase: ObserveActiveGameUseCase,
-    private val addNewGameUseCase: AddNewGameUseCase
+    private val lockRoundUseCase: LockRoundUseCase,
+    private val completeActiveGameUseCase: CompleteActiveGameUseCase,
+    private val addNewGameUseCase: AddNewGameUseCase,
+    private val adjustScoreUseCase: AdjustScoreUseCase
 ) : BaseViewModel<MatchEvent, MatchState, MatchEffect>() {
 
     init {
@@ -31,15 +36,10 @@ class MatchViewModel(
     override fun handleEvent(event: MatchEvent) {
         when (event) {
             is MatchEvent.AdjustScoreClicked -> {
-                setState {
-                    copy(
-                        players = adjustPlayerPt(
-                            players = players,
-                            editingPlayerId = event.playerId,
-                            delta = event.delta
-                        )
-                    )
-                }
+                adjustPlayerScore(
+                    delta = event.delta,
+                    playerId = event.playerId
+                )
             }
 
             is MatchEvent.OpenEditScoreDialog -> {
@@ -58,8 +58,9 @@ class MatchViewModel(
                 setState { copy(isLockRoundConfirmationVisible = true) }
             }
 
-            MatchEvent.ConfirmLockRoundClicked -> {
+            is MatchEvent.ConfirmLockRoundClicked -> {
                 setState { copy(isLockRoundConfirmationVisible = false) }
+                lockRound(resetScores = event.resetScores)
             }
 
             MatchEvent.DismissLockRound -> {
@@ -91,7 +92,52 @@ class MatchViewModel(
             MatchEvent.AddPlayerClicked -> {
                 setEffect { MatchEffect.NavigateToAddPlayer }
             }
+
+            MatchEvent.FinishGameClicked -> {
+                completeActiveGame()
+            }
         }
+    }
+
+    private fun adjustPlayerScore(
+        delta: Int,
+        playerId: Int
+    ) {
+        launchWithResult(
+            block = {
+                adjustScoreUseCase(
+                    AdjustScoreUseCase.Params(
+                        playerId = playerId,
+                        delta = delta
+                    )
+                )
+            },
+            onSuccess = {},
+            onError = { error -> sendSnackbar(error.toUiText()) }
+        )
+    }
+
+    private fun lockRound(resetScores: Boolean) {
+        launchWithResult(
+            block = {
+                lockRoundUseCase(LockRoundUseCase.Params(resetScores = resetScores))
+            },
+            onSuccess = { sendSnackbar("Round locked successfully") },
+            onError = { error -> sendSnackbar(error.toUiText()) }
+        )
+    }
+
+    private fun completeActiveGame() {
+        launchWithResult(
+            block = {
+                completeActiveGameUseCase()
+            },
+            onSuccess = {
+                setState { copy(isGameResultVisible = true) }
+                sendSnackbar("Game completed!")
+            },
+            onError = { error -> sendSnackbar(error.toUiText()) }
+        )
     }
 
     private fun addNewActiveGame(
@@ -103,13 +149,13 @@ class MatchViewModel(
                 addNewGameUseCase(
                     Game(
                         name = name,
-                        maxRounds = maxRounds.toIntOrNull()?:0
+                        maxRounds = maxRounds.toIntOrNull() ?: 0
                     )
                 )
             },
             onSuccess = {
                 setState {
-                    copy(isStartGameDialogVisible = false,)
+                    copy(isStartGameDialogVisible = false)
                 }
                 sendSnackbar("Game created successfully")
             },
@@ -119,7 +165,7 @@ class MatchViewModel(
     }
 
     private fun observePlayers() {
-        observePlayersUseCase()
+        observePlayersWithStatsUseCase()
             .catch { sendSnackbar("Failed to observe players") }
             .onEach { roster ->
                 setState { copy(players = roster) }
@@ -135,24 +181,9 @@ class MatchViewModel(
             .onEach { game ->
                 val activeGame = game ?: Game()
                 setState {
-                    copy(
-                        game = activeGame,
-                        currentRound = 1,
-                    )
+                    copy(game = activeGame)
                 }
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun adjustPlayerPt(
-        players: List<Player>,
-        editingPlayerId: Int,
-        delta: Int
-    ): List<Player> {
-        return players.map {
-            if (it.id == editingPlayerId)
-                it.copy()
-            else it
-        }
     }
 }

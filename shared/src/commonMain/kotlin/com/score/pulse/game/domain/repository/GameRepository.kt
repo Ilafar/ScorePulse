@@ -11,4 +11,5 @@ interface GameRepository {
     suspend fun getAllGames(): AppResult<List<Game>, DataError>
     suspend fun startNewActiveGame(game: Game): EmptyResult<DataError>
     suspend fun completeActiveGame(): EmptyResult<DataError>
+    suspend fun lockRound(resetScores: Boolean): EmptyResult<DataError>
 }

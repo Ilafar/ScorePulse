@@ -33,20 +33,21 @@ fun CustomScoreDialog(
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit,
 ) {
-    var text by remember(currentScore) { mutableStateOf(currentScore.toString()) }
+    var score by remember(currentScore) { mutableStateOf(currentScore.toString()) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Enter custom score") },
         text = {
             OutlinedTextField(
-                value = text,
-                onValueChange = { input -> if (input.all { it.isDigit() }) text = input },
+                value = score,
+                onValueChange = { input -> if (input.all { it.isDigit() }) score = input },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
         },
         confirmButton = {
-            TextButton(onClick = { text.toIntOrNull()?.let(onConfirm) ?: onDismiss() }) {
+            val scoreDelta = (score.toIntOrNull() ?: 0) - currentScore
+            TextButton(onClick = { scoreDelta.let(onConfirm) }) {
                 Text("Apply", color = MaterialTheme.colorScheme.primary)
             }
         },
@@ -118,7 +119,8 @@ fun StartGame(
                             return@GradientPrimaryButton
                         }
                         if (totalRounds.toIntOrNull() == null
-                            || totalRounds.toInt() < 1) {
+                            || totalRounds.toInt() < 1
+                        ) {
                             totalRoundsError = "Enter a valid number"
                             return@GradientPrimaryButton
                         }

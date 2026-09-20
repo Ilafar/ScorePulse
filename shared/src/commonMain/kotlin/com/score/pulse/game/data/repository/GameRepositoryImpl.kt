@@ -6,6 +6,7 @@ import com.score.pulse.core.domain.error.DataError
 import com.score.pulse.core.domain.error.EmptyResult
 import com.score.pulse.core.domain.error.asEmptyDataResult
 import com.score.pulse.game.data.local.dao.GameDao
+import com.score.pulse.game.data.local.dao.PlayerGameDao
 import com.score.pulse.game.data.mapper.toDomain
 import com.score.pulse.game.data.mapper.toEntity
 import com.score.pulse.game.domain.model.Game
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GameRepositoryImpl(
-    private val gameDao: GameDao
+    private val gameDao: GameDao,
+    private val playerGameDao: PlayerGameDao
 ) : GameRepository {
     override suspend fun getAllGames(): AppResult<List<Game>, DataError> {
         return safeDbCall {
@@ -35,6 +37,15 @@ class GameRepositoryImpl(
     override suspend fun completeActiveGame(): EmptyResult<DataError> {
         return safeDbCall {
             gameDao.completeActiveGame()
+        }.asEmptyDataResult()
+    }
+
+    override suspend fun lockRound(resetScores: Boolean): EmptyResult<DataError> {
+        return safeDbCall {
+            if (resetScores) {
+                playerGameDao.resetScoresForActiveGame()
+            }
+            gameDao.lockRound()
         }.asEmptyDataResult()
     }
 }

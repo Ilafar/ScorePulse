@@ -9,6 +9,7 @@ import kotlin.time.Clock.System
 data class GameEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
+    val currentRound: Int = 1,
     val maxRounds: Int,
     val status: GameStatus,
     val createdAt: Long = System.now().toEpochMilliseconds()
