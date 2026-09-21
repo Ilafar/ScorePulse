@@ -16,16 +16,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.score.pulse.addplayer.presentation.ui.AddPlayerRoot
 import com.score.pulse.core.presentation.components.AppBottomNavBar
 import com.score.pulse.core.presentation.components.AppDestination
 import com.score.pulse.core.presentation.snackbar.ObserveAsEvents
 import com.score.pulse.core.presentation.snackbar.SnackbarController
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
-import com.score.pulse.history.presentation.ui.HistoryRoot
-import com.score.pulse.home.presentation.ui.HomeRoot
-import com.score.pulse.home.presentation.viewmodel.HomeViewModel
-import com.score.pulse.leaderboard.presentation.ui.LeaderboardRoot
+import com.score.pulse.game.presentation.match.ui.MatchRoot
+import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
+import com.score.pulse.game.presentation.addplayer.ui.AddPlayerRoot
+import com.score.pulse.game.presentation.history.ui.HistoryRoot
+import com.score.pulse.game.presentation.leaderboard.ui.LeaderboardRoot
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -33,11 +33,11 @@ import org.koin.compose.viewmodel.koinViewModel
 @Preview
 fun App() {
     ScorePulseTheme {
-        var destination by remember { mutableStateOf(AppDestination.Home) }
+        var destination by remember { mutableStateOf(AppDestination.Match) }
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
-        val homeViewModel: HomeViewModel = koinViewModel()
-        val homeListState = rememberLazyListState()
+        val matchViewModel: MatchViewModel = koinViewModel()
+        val matchListState = rememberLazyListState()
 
         ObserveAsEvents(
             flow = SnackbarController.events,
@@ -68,10 +68,10 @@ fun App() {
         ) { innerPadding ->
             val contentPadding = innerPadding + PaddingValues(16.dp)
             when (destination) {
-                AppDestination.Home -> HomeRoot(
+                AppDestination.Match -> MatchRoot(
                     contentPadding = contentPadding,
-                    listState = homeListState,
-                    viewModel = homeViewModel,
+                    listState = matchListState,
+                    viewModel = matchViewModel,
                     onNavigateToAddPlayer = { destination = AppDestination.Add },
                 )
 

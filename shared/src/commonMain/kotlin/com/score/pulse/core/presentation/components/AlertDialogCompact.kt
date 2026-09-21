@@ -21,12 +21,12 @@ fun AlertDialogCompact(
         text = { Text(text) },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text(dismissText)
+                Text(confirmText)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(confirmText)
+                Text(dismissText)
             }
         }
     )

@@ -1,0 +1,10 @@
+package com.score.pulse.game.domain.model
+
+data class Game(
+    val id: Int = 0,
+    val name: String = "",
+    val currentRound: Int = 1,
+    val maxRounds: Int = 0,
+    val status: GameStatus = GameStatus.SETUP,
+    val createdAt: Long = 0L
+)

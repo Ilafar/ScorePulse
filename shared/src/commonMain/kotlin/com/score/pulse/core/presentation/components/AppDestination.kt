@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class AppDestination(val label: String, val icon: ImageVector) {
-    Home("Home", Icons.Filled.SportsEsports),
+    Match("Match", Icons.Filled.SportsEsports),
     Ranks("Ranks", Icons.Filled.Leaderboard),
     Add("Add", Icons.Filled.Add),
     History("History", Icons.Filled.History),
