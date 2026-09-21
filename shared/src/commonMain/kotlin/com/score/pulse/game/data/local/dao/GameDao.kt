@@ -24,12 +24,12 @@ interface GameDao {
 
     @Transaction
     suspend fun startNewActiveGame(game: GameEntity): Long {
-        deleteActiveGame()
+        clearIncompleteGame()
         return upsertGame(game.copy(status = GameStatus.IN_PROGRESS))
     }
 
     @Query("DELETE FROM games WHERE status = 'IN_PROGRESS'")
-    suspend fun deleteActiveGame()
+    suspend fun clearIncompleteGame()
 
     @Query("UPDATE games SET currentRound = currentRound + 1 WHERE status = 'IN_PROGRESS'")
     suspend fun lockRound()

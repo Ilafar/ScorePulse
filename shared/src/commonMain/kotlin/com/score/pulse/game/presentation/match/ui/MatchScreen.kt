@@ -78,7 +78,7 @@ private fun MatchScreen(
     ) {
         item {
             ArenaRadarCard(
-                gameTitle = state.game.name,
+                gameTitle = state.game?.name.orEmpty(),
                 roundLabel = state.roundLabel,
                 players = state.players,
                 isGameStarted = state.isGameStarted,
@@ -112,7 +112,7 @@ private fun MatchScreen(
                 if (!state.isFinalRound)
                     GradientPrimaryButton(
                         modifier = Modifier.fillMaxSize(),
-                        text = "Lock Round ${state.game.currentRound}",
+                        text = "Lock Round ${state.game?.currentRound}",
                         onClick = { onEvent(MatchEvent.OpenLockRoundDialog) },
                         icon = Icons.Filled.DoneAll,
                     )
@@ -144,7 +144,7 @@ private fun MatchScreen(
                 MatchResultCard(
                     match = MatchRecord(
                         id = "m1",
-                        title = state.game.name,
+                        title = state.game?.name.orEmpty(),
                         durationMinutes = 42,
                         dateLabel = "Today, 8:45 PM",
                         participants = state.players.map {
@@ -192,7 +192,6 @@ private fun MatchScreen(
                         newScore
                     )
                 )
-                onEvent(MatchEvent.DismissEdit)
             },
         )
     }

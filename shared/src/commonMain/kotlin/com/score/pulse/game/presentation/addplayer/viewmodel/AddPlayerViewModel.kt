@@ -2,6 +2,7 @@ package com.score.pulse.game.presentation.addplayer.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.score.pulse.core.base.BaseViewModel
+import com.score.pulse.core.domain.usecase.NoParams
 import com.score.pulse.core.presentation.util.UiText
 import com.score.pulse.core.presentation.util.toUiText
 import com.score.pulse.game.domain.error.AddPlayerError
@@ -112,7 +113,7 @@ class AddPlayerViewModel(
     private fun deleteAllPlayers() {
         launchWithResult(
             block = {
-                clearPlayersUseCase()
+                clearPlayersUseCase(NoParams)
             },
             onSuccess = {
                 sendSnackbar("All players removed successfully")

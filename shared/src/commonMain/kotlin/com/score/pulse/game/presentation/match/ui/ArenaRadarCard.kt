@@ -116,7 +116,7 @@ fun ArenaRadarCard(
 
                 ArenaVsBadge(
                     isGameStarted = isGameStarted,
-                    accentColors =  accentColors,
+                    accentColors = accentColors,
                     onClick = onCenterTap
                 )
             }
@@ -191,14 +191,19 @@ private fun ArenaVsBadge(
     accentColors: List<AccentColor>,
     onClick: () -> Unit
 ) {
-    val gradientColors = if (accentColors.isNotEmpty())
-        accentColors.map { it.containerColor().copy(alpha = 0.6f) }
-    else
-        listOf(
+    val gradientColors = when {
+        accentColors.size >= 2 -> accentColors.map { it.containerColor().copy(alpha = 0.6f) }
+        accentColors.size == 1 -> {
+            val color = accentColors.first().containerColor().copy(alpha = 0.6f)
+            listOf(color, color)
+        }
+
+        else -> listOf(
             MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
             MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
             MaterialTheme.colorScheme.tertiary.copy(alpha = 0.6f),
         )
+    }
 
     Box(
         modifier = Modifier

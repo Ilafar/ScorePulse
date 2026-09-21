@@ -5,6 +5,6 @@ data class Game(
     val name: String = "",
     val currentRound: Int = 1,
     val maxRounds: Int = 0,
-    val status: GameStatus = GameStatus.COMPLETED,
+    val status: GameStatus = GameStatus.SETUP,
     val createdAt: Long = 0L
 )

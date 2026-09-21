@@ -2,6 +2,7 @@ package com.score.pulse.game.presentation.match.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.score.pulse.core.base.BaseViewModel
+import com.score.pulse.core.domain.usecase.NoParams
 import com.score.pulse.core.presentation.util.toUiText
 import com.score.pulse.game.domain.model.Game
 import com.score.pulse.game.domain.usecase.add.AddNewGameUseCase
@@ -40,6 +41,7 @@ class MatchViewModel(
                     delta = event.delta,
                     playerId = event.playerId
                 )
+                setState { copy(editingPlayerId = null) }
             }
 
             is MatchEvent.OpenEditScoreDialog -> {
@@ -130,7 +132,7 @@ class MatchViewModel(
     private fun completeActiveGame() {
         launchWithResult(
             block = {
-                completeActiveGameUseCase()
+                completeActiveGameUseCase(NoParams)
             },
             onSuccess = {
                 setState { copy(isGameResultVisible = true) }
@@ -178,12 +180,7 @@ class MatchViewModel(
             .catch {
                 sendSnackbar("Failed to observe active game $it")
             }
-            .onEach { game ->
-                val activeGame = game ?: Game()
-                setState {
-                    copy(game = activeGame)
-                }
-            }
+            .onEach { game -> setState { copy(game = game) } }
             .launchIn(viewModelScope)
     }
 }
