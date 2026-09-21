@@ -6,7 +6,6 @@ import com.score.pulse.game.data.local.entity.PlayerGameStatsEntity
 import com.score.pulse.game.domain.model.AccentColor
 import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.model.PlayerEmblem
-import com.score.pulse.game.domain.model.PlayerWithStats
 
 fun PlayerEntity.toDomain(): Player {
     return Player(
@@ -26,26 +25,26 @@ fun Player.toEntity(): PlayerEntity {
     )
 }
 
-fun PlayerWithStats.toEntity(gameId: Int): PlayerWithStatsEntity {
-    return PlayerWithStatsEntity(
-        player = player.toEntity(),
-        stats = PlayerGameStatsEntity(
-            playerId = player.id,
-            gameId = gameId,
-            wins = wins,
-            losses = losses,
-            score = score,
-            rank = rank
-        )
+fun Player.toStatsEntity(gameId: Int): PlayerGameStatsEntity {
+    return PlayerGameStatsEntity(
+        playerId = id,
+        gameId = gameId,
+        wins = wins,
+        losses = losses,
+        score = score,
+        rank = rank
     )
 }
 
-fun PlayerWithStatsEntity.toDomain(): PlayerWithStats {
-    return PlayerWithStats(
-        player = player.toDomain(),
+fun PlayerWithStatsEntity.toDomain(): Player {
+    return Player(
+        id = player.id,
+        name = player.name,
+        emblem = runCatching { PlayerEmblem.valueOf(player.emblem) }.getOrDefault(PlayerEmblem.Gamepad),
+        accent = runCatching { AccentColor.valueOf(player.accent) }.getOrDefault(AccentColor.Emerald),
+        score = stats.score,
         wins = stats.wins,
         losses = stats.losses,
-        score = stats.score,
         rank = stats.rank
     )
 }

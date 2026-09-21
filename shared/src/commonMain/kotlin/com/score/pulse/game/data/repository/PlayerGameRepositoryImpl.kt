@@ -6,13 +6,15 @@ import com.score.pulse.core.domain.error.EmptyResult
 import com.score.pulse.core.domain.error.asEmptyDataResult
 import com.score.pulse.game.data.local.dao.PlayerGameDao
 import com.score.pulse.game.data.mapper.toDomain
+import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.repository.PlayerGameRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class PlayerGameRepositoryImpl(
     private val playerGameDao: PlayerGameDao
 ) : PlayerGameRepository {
-    override fun observePlayersForActiveGame() =
+    override fun observePlayersForActiveGame(): Flow<List<Player>> =
         playerGameDao.observePlayersForActiveGame()
             .map { entities -> entities.map { it.toDomain() } }
 

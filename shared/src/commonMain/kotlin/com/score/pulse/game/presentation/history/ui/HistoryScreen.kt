@@ -1,7 +1,7 @@
 package com.score.pulse.game.presentation.history.ui
 import com.score.pulse.game.domain.model.AccentColor
-import com.score.pulse.game.domain.model.MatchParticipant
 import com.score.pulse.game.domain.model.MatchRecord
+import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.model.PlayerEmblem
 
 import androidx.compose.foundation.layout.Arrangement
@@ -59,10 +59,10 @@ private fun sampleMatches(): List<MatchRecord> = listOf(
         durationMinutes = 42,
         dateLabel = "Today, 8:45 PM",
         participants = listOf(
-            MatchParticipant("Alex", PlayerEmblem.Thunder, AccentColor.Emerald, score = 350, rank = 1),
-            MatchParticipant("Sarah", PlayerEmblem.Gamepad, AccentColor.Cyan, score = 310, rank = 2),
-            MatchParticipant("Marcus", PlayerEmblem.Phoenix, AccentColor.Magenta, score = 280, rank = 3),
-            MatchParticipant("Elena", PlayerEmblem.Shield, AccentColor.Violet, score = 215, rank = 4),
+            Player(name = "Alex", emblem = PlayerEmblem.Thunder, accent = AccentColor.Emerald, score = 350, rank = 1),
+            Player(name = "Sarah", emblem = PlayerEmblem.Gamepad, accent = AccentColor.Cyan, score = 310, rank = 2),
+            Player(name = "Marcus", emblem = PlayerEmblem.Phoenix, accent = AccentColor.Magenta, score = 280, rank = 3),
+            Player(name = "Elena", emblem = PlayerEmblem.Shield, accent = AccentColor.Violet, score = 215, rank = 4),
         ),
     ),
     MatchRecord(
@@ -71,9 +71,9 @@ private fun sampleMatches(): List<MatchRecord> = listOf(
         durationMinutes = 28,
         dateLabel = "Yesterday, 6:10 PM",
         participants = listOf(
-            MatchParticipant("Zoe", PlayerEmblem.Thunder, AccentColor.Emerald, score = 190, rank = 1),
-            MatchParticipant("Kai", PlayerEmblem.Skull, AccentColor.Cyan, score = 165, rank = 2),
-            MatchParticipant("Liam", PlayerEmblem.Strike, AccentColor.Magenta, score = 140, rank = 3),
+            Player(name = "Zoe", emblem = PlayerEmblem.Thunder, accent = AccentColor.Emerald, score = 190, rank = 1),
+            Player(name = "Kai", emblem = PlayerEmblem.Skull, accent = AccentColor.Cyan, score = 165, rank = 2),
+            Player(name = "Liam", emblem = PlayerEmblem.Strike, accent = AccentColor.Magenta, score = 140, rank = 3),
         ),
     ),
     MatchRecord(
@@ -82,10 +82,10 @@ private fun sampleMatches(): List<MatchRecord> = listOf(
         durationMinutes = 55,
         dateLabel = "Sep 8, 3:20 PM",
         participants = listOf(
-            MatchParticipant("Maya", PlayerEmblem.Shield, AccentColor.Cyan, score = 410, rank = 1),
-            MatchParticipant("Alex", PlayerEmblem.Thunder, AccentColor.Emerald, score = 375, rank = 2),
-            MatchParticipant("Elena", PlayerEmblem.Shield, AccentColor.Violet, score = 320, rank = 3),
-            MatchParticipant("Marcus", PlayerEmblem.Phoenix, AccentColor.Magenta, score = 260, rank = 4),
+            Player(name = "Maya", emblem = PlayerEmblem.Shield, accent = AccentColor.Cyan, score = 410, rank = 1),
+            Player(name = "Alex", emblem = PlayerEmblem.Thunder, accent = AccentColor.Emerald, score = 375, rank = 2),
+            Player(name = "Elena", emblem = PlayerEmblem.Shield, accent = AccentColor.Violet, score = 320, rank = 3),
+            Player(name = "Marcus", emblem = PlayerEmblem.Phoenix, accent = AccentColor.Magenta, score = 260, rank = 4),
         ),
     ),
 )
