@@ -18,14 +18,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.score.pulse.core.presentation.components.AppBottomNavBar
 import com.score.pulse.core.presentation.components.AppDestination
+import com.score.pulse.core.presentation.components.TopAppBar
 import com.score.pulse.core.presentation.snackbar.ObserveAsEvents
 import com.score.pulse.core.presentation.snackbar.SnackbarController
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
-import com.score.pulse.game.presentation.match.ui.MatchRoot
-import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import com.score.pulse.game.presentation.addplayer.ui.AddPlayerRoot
 import com.score.pulse.game.presentation.history.ui.HistoryRoot
 import com.score.pulse.game.presentation.leaderboard.ui.LeaderboardRoot
+import com.score.pulse.game.presentation.match.ui.MatchRoot
+import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -59,6 +60,18 @@ fun App() {
         }
 
         Scaffold(
+            topBar = {
+                if (destination != AppDestination.Match) {
+                    TopAppBar(
+                        title = when (destination) {
+                            AppDestination.Ranks -> "LEADERBOARD"
+                            AppDestination.Add -> "ADD PLAYER"
+                            AppDestination.History -> "MATCH HISTORY"
+                            AppDestination.Match -> ""
+                        }
+                    )
+                }
+            },
             bottomBar = {
                 AppBottomNavBar(
                     selected = destination,
@@ -76,7 +89,9 @@ fun App() {
                 )
 
                 AppDestination.Ranks -> LeaderboardRoot(
-                    contentPadding = contentPadding
+                    contentPadding = contentPadding,
+                    onNavigateToMatch = { destination = AppDestination.Match },
+                    onNavigateToAddPlayer = { destination = AppDestination.Add },
                 )
 
                 AppDestination.Add -> AddPlayerRoot(
@@ -84,7 +99,9 @@ fun App() {
                 )
 
                 AppDestination.History -> HistoryRoot(
-                    contentPadding = contentPadding
+                    contentPadding = contentPadding,
+                    onNavigateToMatch = { destination = AppDestination.Match },
+                    onNavigateToAddPlayer = { destination = AppDestination.Add },
                 )
             }
         }

@@ -19,10 +19,13 @@ import com.score.pulse.game.domain.usecase.clear.ClearPlayersUseCase
 import com.score.pulse.game.domain.usecase.complete.CompleteActiveGameUseCase
 import com.score.pulse.game.domain.usecase.delete.DeletePlayerUseCase
 import com.score.pulse.game.domain.usecase.observe.ObserveActiveGameUseCase
+import com.score.pulse.game.domain.usecase.observe.ObserveLeaderboardUseCase
 import com.score.pulse.game.domain.usecase.observe.ObserveMatchHistoryUseCase
 import com.score.pulse.game.domain.usecase.observe.ObservePlayersUseCase
 import com.score.pulse.game.domain.usecase.observe.ObservePlayersWithStatsUseCase
 import com.score.pulse.game.presentation.addplayer.viewmodel.AddPlayerViewModel
+import com.score.pulse.game.presentation.history.viewmodel.HistoryViewModel
+import com.score.pulse.game.presentation.leaderboard.viewmodel.LeaderboardViewModel
 import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -36,6 +39,8 @@ expect val platformModule: Module
 val sharedModule = module {
     viewModelOf(::MatchViewModel)
     viewModelOf(::AddPlayerViewModel)
+    viewModelOf(::HistoryViewModel)
+    viewModelOf(::LeaderboardViewModel)
 
     single {
         get<DatabaseFactory>().create()
@@ -54,6 +59,7 @@ val sharedModule = module {
     factoryOf(::LockRoundUseCase)
     factoryOf(::CompleteActiveGameUseCase)
     factoryOf(::ObserveMatchHistoryUseCase)
+    factoryOf(::ObserveLeaderboardUseCase)
 
     single { get<AppDatabase>().playerDao() }
     single { get<AppDatabase>().gameDao() }

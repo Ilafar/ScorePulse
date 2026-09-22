@@ -167,8 +167,9 @@ private fun MatchScreen(
             text = "Reset player points for next round?",
             dismissText = "Continue without reset",
             confirmText = "Reset",
-            onDismiss = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = false)) },
+            onDismiss = { onEvent(MatchEvent.DismissLockRound) },
             onConfirm = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = true)) },
+            onDecline = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = false)) },
         )
     }
 
