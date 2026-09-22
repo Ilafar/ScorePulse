@@ -1,7 +1,4 @@
 package com.score.pulse.game.presentation.leaderboard.ui
-import com.score.pulse.game.domain.model.AccentColor
-import com.score.pulse.game.domain.model.PlayerEmblem
-import com.score.pulse.game.domain.model.RankingEntry
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,42 +11,76 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
+import com.score.pulse.game.domain.model.AccentColor
+import com.score.pulse.game.domain.model.PlayerEmblem
+import com.score.pulse.game.domain.model.RankingEntry
+import com.score.pulse.game.presentation.leaderboard.contract.LeaderboardEffect
+import com.score.pulse.game.presentation.leaderboard.contract.LeaderboardEvent
+import com.score.pulse.game.presentation.leaderboard.contract.LeaderboardState
+import com.score.pulse.game.presentation.leaderboard.viewmodel.LeaderboardViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LeaderboardRoot(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues,
-){
+    viewModel: LeaderboardViewModel = koinViewModel(),
+    onNavigateToMatch: () -> Unit = {},
+    onNavigateToAddPlayer: () -> Unit = {},
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                LeaderboardEffect.NavigateToMatch -> onNavigateToMatch()
+                LeaderboardEffect.NavigateToAddPlayer -> onNavigateToAddPlayer()
+            }
+        }
+    }
+
     LeaderboardScreen(
         modifier = modifier,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        state = state,
+        onEvent = viewModel::setEvent,
     )
 }
 
 @Composable
 private fun LeaderboardScreen(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(16.dp)
+    contentPadding: PaddingValues = PaddingValues(16.dp),
+    state: LeaderboardState = LeaderboardState(),
+    onEvent: (LeaderboardEvent) -> Unit = {},
 ) {
-    val rankings = remember { sampleRankings() }
-    val top3 = rankings.take(3)
-    val rest = rankings.drop(3)
+    val rankings = state.rankings
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        item { PodiumSection(top3 = top3) }
-        item { RankingTableHeader() }
-        items(rest, key = { it.rank }) { entry -> RankingRow(entry = entry) }
+    if (rankings.isEmpty()) {
+        EmptyLeaderboardContent(
+            onStartMatch = { onEvent(LeaderboardEvent.StartMatchClicked) },
+            onAddPlayers = { onEvent(LeaderboardEvent.AddPlayerClicked) },
+        )
+    } else {
+        LazyColumn(
+            modifier = modifier.fillMaxSize(),
+            contentPadding = contentPadding,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            item { PodiumSection(top3 = state.top3) }
+            item { RankingTableHeader() }
+            items(state.rest, key = { it.rank }) { entry -> RankingRow(entry = entry) }
+        }
     }
+
 }
 
 @Composable
@@ -171,6 +202,8 @@ private fun sampleRankings(): List<RankingEntry> = listOf(
 @Composable
 private fun LeaderboardScreenPreview() {
     ScorePulseTheme {
-        LeaderboardScreen()
+        LeaderboardScreen(
+            state = LeaderboardState(rankings = sampleRankings())
+        )
     }
 }

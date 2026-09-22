@@ -1,5 +1,5 @@
 package com.score.pulse.game.presentation.match.ui
-import com.score.pulse.game.domain.model.PlayerWithStats
+import com.score.pulse.game.domain.model.Player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,12 +30,12 @@ import com.score.pulse.game.domain.model.containerColor
 
 @Composable
 fun PlayerScoreEntryCard(
-    player: PlayerWithStats,
+    player: Player,
     onAdjust: (Int) -> Unit,
     onCustomEdit: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val accent = player.player.accent.containerColor()
+    val accent = player.accent.containerColor()
     GlassCard(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -46,14 +46,14 @@ fun PlayerScoreEntryCard(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 EmblemAvatar(
-                    emblem = player.player.emblem,
-                    accent = player.player.accent,
+                    emblem = player.emblem,
+                    accent = player.accent,
                     size = 36.dp,
                     shape = MaterialTheme.shapes.medium,
                     showStatusDot = true,
                 )
                 Text(
-                    text = player.player.name,
+                    text = player.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )

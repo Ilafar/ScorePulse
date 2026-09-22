@@ -4,7 +4,8 @@ sealed interface DataError : AppError {
 
     enum class Local : DataError {
         DISK_FULL,
-        UNKNOWN
+        UNKNOWN,
+        NOT_FOUND,
     }
 
     enum class Network : DataError {

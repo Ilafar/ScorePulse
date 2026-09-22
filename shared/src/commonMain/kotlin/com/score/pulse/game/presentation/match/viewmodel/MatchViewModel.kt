@@ -2,7 +2,6 @@ package com.score.pulse.game.presentation.match.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.score.pulse.core.base.BaseViewModel
-import com.score.pulse.core.domain.usecase.NoParams
 import com.score.pulse.core.presentation.util.toUiText
 import com.score.pulse.game.domain.model.Game
 import com.score.pulse.game.domain.usecase.add.AddNewGameUseCase
@@ -132,7 +131,7 @@ class MatchViewModel(
     private fun completeActiveGame() {
         launchWithResult(
             block = {
-                completeActiveGameUseCase(NoParams)
+                completeActiveGameUseCase(currentState.players)
             },
             onSuccess = {
                 setState { copy(isGameResultVisible = true) }

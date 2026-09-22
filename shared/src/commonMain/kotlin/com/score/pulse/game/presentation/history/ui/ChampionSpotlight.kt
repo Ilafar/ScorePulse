@@ -1,5 +1,5 @@
 package com.score.pulse.game.presentation.history.ui
-import com.score.pulse.game.domain.model.MatchParticipant
+import com.score.pulse.game.domain.model.Player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.score.pulse.core.presentation.components.ScoreStatText
 
 @Composable
-fun ChampionSpotlight(champion: MatchParticipant, modifier: Modifier = Modifier) {
+fun ChampionSpotlight(champion: Player, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()

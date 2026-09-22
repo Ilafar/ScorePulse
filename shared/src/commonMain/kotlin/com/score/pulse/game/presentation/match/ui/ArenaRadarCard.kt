@@ -39,7 +39,6 @@ import com.score.pulse.core.presentation.theme.ScorePulseTheme
 import com.score.pulse.game.domain.model.AccentColor
 import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.model.PlayerEmblem
-import com.score.pulse.game.domain.model.PlayerWithStats
 import com.score.pulse.game.domain.model.containerColor
 import kotlin.math.PI
 import kotlin.math.cos
@@ -49,7 +48,7 @@ import kotlin.math.sin
 fun ArenaRadarCard(
     gameTitle: String,
     roundLabel: String,
-    players: List<PlayerWithStats>,
+    players: List<Player>,
     isGameStarted: Boolean = false,
     onCenterTap: () -> Unit,
     modifier: Modifier = Modifier,
@@ -112,7 +111,7 @@ fun ArenaRadarCard(
                     )
                 }
 
-                val accentColors = displayPlayers.map { it.player.accent }
+                val accentColors = displayPlayers.map { it.accent }
 
                 ArenaVsBadge(
                     isGameStarted = isGameStarted,
@@ -132,7 +131,7 @@ fun ArenaRadarCard(
 }
 
 @Composable
-private fun ArenaRings(players: List<PlayerWithStats>) {
+private fun ArenaRings(players: List<Player>) {
     val trackColor = MaterialTheme.colorScheme.outlineVariant
     val fallbackColors = listOf(
         MaterialTheme.colorScheme.primary,
@@ -143,7 +142,7 @@ private fun ArenaRings(players: List<PlayerWithStats>) {
     val displayPlayers = players.take(10)
     val slotCount = if (displayPlayers.isEmpty()) 4 else displayPlayers.size
     val dirColors = List(slotCount) { i ->
-        displayPlayers.getOrNull(i)?.player?.accent?.containerColor()
+        displayPlayers.getOrNull(i)?.accent?.containerColor()
             ?: fallbackColors[i % fallbackColors.size]
     }
 
@@ -232,7 +231,7 @@ private fun ArenaVsBadge(
 }
 
 @Composable
-private fun ArenaSlot(player: PlayerWithStats?, modifier: Modifier = Modifier) {
+private fun ArenaSlot(player: Player?, modifier: Modifier = Modifier) {
     if (player != null) {
         ArenaPlayerNode(player, modifier)
     } else {
@@ -268,17 +267,17 @@ private fun ArenaEmptySlotNode(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ArenaPlayerNode(player: PlayerWithStats, modifier: Modifier = Modifier) {
-    val tint = player.player.accent.containerColor()
+private fun ArenaPlayerNode(player: Player, modifier: Modifier = Modifier) {
+    val tint = player.accent.containerColor()
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         EmblemAvatar(
-            emblem = player.player.emblem,
-            accent = player.player.accent,
+            emblem = player.emblem,
+            accent = player.accent,
             size = 48.dp,
             showStatusDot = true,
         )
         Text(
-            text = player.player.name,
+            text = player.name,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(top = 4.dp),
@@ -307,36 +306,37 @@ private fun ArenaRadarCardPreview() {
             gameTitle = "Cyberclash Shutdown",
             roundLabel = "Round 3/5",
             players = listOf(
-                PlayerWithStats(
-                    Player(
-                        1,
-                        "Alex \"Viper\"",
-                        PlayerEmblem.Gamepad,
-                        AccentColor.Emerald
-                    ), wins = 0, losses = 0, score = 150, rank = 1
+                Player(
+                    id = 1,
+                    name = "Alex \"Viper\"",
+                    emblem = PlayerEmblem.Gamepad,
+                    accent = AccentColor.Emerald,
+                    score = 150,
+                    rank = 1,
                 ),
-                PlayerWithStats(
-                    Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
-                    wins = 0,
-                    losses = 0,
+                Player(
+                    id = 2,
+                    name = "Sarah \"Nova\"",
+                    emblem = PlayerEmblem.Thunder,
+                    accent = AccentColor.Cyan,
                     score = 120,
-                    rank = 2
+                    rank = 2,
                 ),
-                PlayerWithStats(
-                    Player(
-                        3,
-                        "Marcus \"Rex\"",
-                        PlayerEmblem.Phoenix,
-                        AccentColor.Magenta
-                    ), wins = 0, losses = 0, score = 80, rank = 3
+                Player(
+                    id = 3,
+                    name = "Marcus \"Rex\"",
+                    emblem = PlayerEmblem.Phoenix,
+                    accent = AccentColor.Magenta,
+                    score = 80,
+                    rank = 3,
                 ),
-                PlayerWithStats(
-                    Player(
-                        4,
-                        "Elena \"Pulse\"",
-                        PlayerEmblem.Shield,
-                        AccentColor.Violet
-                    ), wins = 0, losses = 0, score = 60, rank = 4
+                Player(
+                    id = 4,
+                    name = "Elena \"Pulse\"",
+                    emblem = PlayerEmblem.Shield,
+                    accent = AccentColor.Violet,
+                    score = 60,
+                    rank = 4,
                 ),
             ),
             isGameStarted = true,
@@ -353,20 +353,21 @@ private fun ArenaRadarCardEmptySlotsPreview() {
             gameTitle = "Cyberclash Shutdown",
             roundLabel = "Round 1/5",
             players = listOf(
-                PlayerWithStats(
-                    Player(
-                        1,
-                        "Alex \"Viper\"",
-                        PlayerEmblem.Gamepad,
-                        AccentColor.Emerald
-                    ), wins = 0, losses = 0, score = 0, rank = 1
-                ),
-                PlayerWithStats(
-                    Player(2, "Sarah \"Nova\"", PlayerEmblem.Thunder, AccentColor.Cyan),
-                    wins = 0,
-                    losses = 0,
+                Player(
+                    id = 1,
+                    name = "Alex \"Viper\"",
+                    emblem = PlayerEmblem.Gamepad,
+                    accent = AccentColor.Emerald,
                     score = 0,
-                    rank = 2
+                    rank = 1,
+                ),
+                Player(
+                    id = 2,
+                    name = "Sarah \"Nova\"",
+                    emblem = PlayerEmblem.Thunder,
+                    accent = AccentColor.Cyan,
+                    score = 0,
+                    rank = 2,
                 ),
             ),
             isGameStarted = false,

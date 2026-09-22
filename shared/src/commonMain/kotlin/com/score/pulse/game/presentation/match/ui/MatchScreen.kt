@@ -25,7 +25,6 @@ import com.score.pulse.core.presentation.components.AlertDialogCompact
 import com.score.pulse.core.presentation.components.GlassCard
 import com.score.pulse.core.presentation.components.GradientPrimaryButton
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
-import com.score.pulse.game.domain.model.MatchParticipant
 import com.score.pulse.game.domain.model.MatchRecord
 import com.score.pulse.game.presentation.history.ui.MatchResultCard
 import com.score.pulse.game.presentation.match.contract.MatchEffect
@@ -33,6 +32,7 @@ import com.score.pulse.game.presentation.match.contract.MatchEvent
 import com.score.pulse.game.presentation.match.contract.MatchState
 import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
 
 @Composable
 fun MatchRoot(
@@ -93,18 +93,18 @@ private fun MatchScreen(
         }
 
         if (state.isGameStarted)
-            items(state.players, key = { it.player.id }) { player ->
+            items(state.players, key = { it.id }) { player ->
                 PlayerScoreEntryCard(
                     player = player,
                     onAdjust = { delta ->
                         onEvent(
                             MatchEvent.AdjustScoreClicked(
-                                player.player.id,
+                                player.id,
                                 delta
                             )
                         )
                     },
-                    onCustomEdit = { onEvent(MatchEvent.OpenEditScoreDialog(player.player.id)) },
+                    onCustomEdit = { onEvent(MatchEvent.OpenEditScoreDialog(player.id)) },
                 )
             }
         if (state.isGameStarted && state.hasMinimumPlayers)
@@ -146,16 +146,8 @@ private fun MatchScreen(
                         id = "m1",
                         title = state.game?.name.orEmpty(),
                         durationMinutes = 42,
-                        dateLabel = "Today, 8:45 PM",
-                        participants = state.players.map {
-                            MatchParticipant(
-                                name = it.player.name,
-                                score = it.score,
-                                rank = it.rank,
-                                accent = it.player.accent,
-                                emblem = it.player.emblem
-                            )
-                        }
+                        createdAt = Clock.System.now().toEpochMilliseconds(),
+                        participants = state.players
                     )
                 )
                 GradientPrimaryButton(
@@ -175,8 +167,9 @@ private fun MatchScreen(
             text = "Reset player points for next round?",
             dismissText = "Continue without reset",
             confirmText = "Reset",
-            onDismiss = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = false)) },
+            onDismiss = { onEvent(MatchEvent.DismissLockRound) },
             onConfirm = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = true)) },
+            onDecline = { onEvent(MatchEvent.ConfirmLockRoundClicked(resetScores = false)) },
         )
     }
 
@@ -188,7 +181,7 @@ private fun MatchScreen(
             onConfirm = { newScore ->
                 onEvent(
                     MatchEvent.AdjustScoreClicked(
-                        editingPlayer.player.id,
+                        editingPlayer.id,
                         newScore
                     )
                 )

@@ -5,6 +5,7 @@ import com.score.pulse.core.domain.error.DataError
 fun DataError.toUiText(): UiText {
     return when (this) {
         DataError.Local.DISK_FULL -> UiText.DynamicString("Data is full")
+        DataError.Local.NOT_FOUND -> UiText.DynamicString("Item not found")
         DataError.Local.UNKNOWN -> UiText.DynamicString("An unexpected error occurred")
         DataError.Network.NO_INTERNET -> UiText.DynamicString("No internet connection")
         DataError.Network.REQUEST_TIMEOUT -> UiText.DynamicString("Request timed out")

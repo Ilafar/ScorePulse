@@ -14,6 +14,7 @@ fun AlertDialogCompact(
     confirmText: String,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
+    onDecline: () -> Unit = {},
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -25,7 +26,7 @@ fun AlertDialogCompact(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = onDecline) {
                 Text(dismissText)
             }
         }

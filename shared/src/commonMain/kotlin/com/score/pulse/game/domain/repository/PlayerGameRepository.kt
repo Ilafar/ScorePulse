@@ -2,11 +2,11 @@ package com.score.pulse.game.domain.repository
 
 import com.score.pulse.core.domain.error.DataError
 import com.score.pulse.core.domain.error.EmptyResult
-import com.score.pulse.game.domain.model.PlayerWithStats
+import com.score.pulse.game.domain.model.Player
 import kotlinx.coroutines.flow.Flow
 
 interface PlayerGameRepository {
-    fun observePlayersForActiveGame(): Flow<List<PlayerWithStats>>
+    fun observePlayersForActiveGame(): Flow<List<Player>>
 
     suspend fun adjustPlayerScore(
         playerId: Int, delta: Int

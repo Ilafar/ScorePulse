@@ -19,6 +19,7 @@ suspend inline fun <T> safeDbCall(
 
 fun Exception.toLocalDataError(): DataError.Local {
     return when (this) {
+        is IllegalStateException -> DataError.Local.NOT_FOUND
         is SQLiteException -> {
             if (message?.contains("SQLITE_FULL", ignoreCase = true) == true ||
                 message?.contains("database or disk is full", ignoreCase = true) == true

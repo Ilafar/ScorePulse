@@ -1,5 +1,5 @@
 package com.score.pulse.game.presentation.history.ui
-import com.score.pulse.game.domain.model.MatchParticipant
+import com.score.pulse.game.domain.model.Player
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +20,7 @@ import com.score.pulse.core.presentation.components.grouped
 import com.score.pulse.game.domain.model.containerColor
 
 @Composable
-fun StandingsGrid(participants: List<MatchParticipant>, modifier: Modifier = Modifier) {
+fun StandingsGrid(participants: List<Player>, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         participants.sortedBy { it.rank }.chunked(2).forEach { rowItems ->
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -36,7 +36,7 @@ fun StandingsGrid(participants: List<MatchParticipant>, modifier: Modifier = Mod
 }
 
 @Composable
-private fun StandingsCell(participant: MatchParticipant, modifier: Modifier = Modifier) {
+private fun StandingsCell(participant: Player, modifier: Modifier = Modifier) {
     val tint = participant.accent.containerColor()
     Row(
         modifier = modifier

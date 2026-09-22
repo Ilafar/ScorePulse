@@ -19,4 +19,16 @@ interface PlayerDao {
 
     @Query("DELETE FROM players")
     suspend fun clearAll()
+
+    @Query("UPDATE players SET score = score + :delta WHERE id = :playerId")
+    suspend fun adjustScore(playerId: Int, delta: Int)
+
+    @Query("UPDATE players SET score = 0")
+    suspend fun resetScores()
+
+    @Query("UPDATE players SET wins = wins + 1 WHERE id = :playerId")
+    suspend fun addWin(playerId: Int)
+
+    @Query("UPDATE players SET losses = losses + 1 WHERE id = :playerId")
+    suspend fun addLoss(playerId: Int)
 }

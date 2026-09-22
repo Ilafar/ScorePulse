@@ -1,6 +1,4 @@
 package com.score.pulse.game.presentation.history.ui
-import com.score.pulse.game.domain.model.MatchParticipant
-import com.score.pulse.game.domain.model.MatchRecord
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.score.pulse.core.presentation.components.GlassCard
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
 import com.score.pulse.game.domain.model.AccentColor
+import com.score.pulse.game.domain.model.MatchRecord
+import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.model.PlayerEmblem
+import kotlin.time.Clock.System
 
 @Composable
 fun MatchResultCard(match: MatchRecord, modifier: Modifier = Modifier) {
@@ -39,9 +40,11 @@ fun MatchResultCard(match: MatchRecord, modifier: Modifier = Modifier) {
             )
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 MatchMetaTag(icon = Icons.Filled.Schedule, text = "${match.durationMinutes} mins duration")
-                MatchMetaTag(icon = Icons.Filled.Event, text = match.dateLabel)
+                MatchMetaTag(icon = Icons.Filled.Event, text = "Today")
             }
-            ChampionSpotlight(champion = match.champion)
+            match.champion?.let { champion ->
+                ChampionSpotlight(champion = champion)
+            }
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
                     text = "LEADERBOARD STANDINGS",
@@ -80,12 +83,12 @@ private fun MatchResultCardPreview() {
                 id = "m1",
                 title = "Cyber Clash Showdown - Final 4",
                 durationMinutes = 42,
-                dateLabel = "Today, 8:45 PM",
+                createdAt = System.now().toEpochMilliseconds(),
                 participants = listOf(
-                    MatchParticipant("Alex", PlayerEmblem.Thunder, AccentColor.Emerald, score = 350, rank = 1),
-                    MatchParticipant("Sarah", PlayerEmblem.Gamepad, AccentColor.Cyan, score = 310, rank = 2),
-                    MatchParticipant("Marcus", PlayerEmblem.Phoenix, AccentColor.Magenta, score = 280, rank = 3),
-                    MatchParticipant("Elena", PlayerEmblem.Shield, AccentColor.Violet, score = 215, rank = 4),
+                    Player(name = "Alex", emblem = PlayerEmblem.Thunder, accent = AccentColor.Emerald, score = 350, rank = 1),
+                    Player(name = "Sarah", emblem = PlayerEmblem.Gamepad, accent = AccentColor.Cyan, score = 310, rank = 2),
+                    Player(name = "Marcus", emblem = PlayerEmblem.Phoenix, accent = AccentColor.Magenta, score = 280, rank = 3),
+                    Player(name = "Elena", emblem = PlayerEmblem.Shield, accent = AccentColor.Violet, score = 215, rank = 4),
                 ),
             ),
         )
