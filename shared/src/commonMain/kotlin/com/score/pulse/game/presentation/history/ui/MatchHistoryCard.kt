@@ -1,6 +1,4 @@
 package com.score.pulse.game.presentation.history.ui
-import com.score.pulse.game.domain.model.MatchRecord
-import com.score.pulse.game.domain.model.Player
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +21,10 @@ import androidx.compose.ui.unit.dp
 import com.score.pulse.core.presentation.components.GlassCard
 import com.score.pulse.core.presentation.theme.ScorePulseTheme
 import com.score.pulse.game.domain.model.AccentColor
+import com.score.pulse.game.domain.model.MatchRecord
+import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.model.PlayerEmblem
+import kotlin.time.Clock.System
 
 @Composable
 fun MatchResultCard(match: MatchRecord, modifier: Modifier = Modifier) {
@@ -39,7 +40,7 @@ fun MatchResultCard(match: MatchRecord, modifier: Modifier = Modifier) {
             )
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 MatchMetaTag(icon = Icons.Filled.Schedule, text = "${match.durationMinutes} mins duration")
-                MatchMetaTag(icon = Icons.Filled.Event, text = match.dateLabel)
+                MatchMetaTag(icon = Icons.Filled.Event, text = "Today")
             }
             match.champion?.let { champion ->
                 ChampionSpotlight(champion = champion)
@@ -82,7 +83,7 @@ private fun MatchResultCardPreview() {
                 id = "m1",
                 title = "Cyber Clash Showdown - Final 4",
                 durationMinutes = 42,
-                dateLabel = "Today, 8:45 PM",
+                createdAt = System.now().toEpochMilliseconds(),
                 participants = listOf(
                     Player(name = "Alex", emblem = PlayerEmblem.Thunder, accent = AccentColor.Emerald, score = 350, rank = 1),
                     Player(name = "Sarah", emblem = PlayerEmblem.Gamepad, accent = AccentColor.Cyan, score = 310, rank = 2),

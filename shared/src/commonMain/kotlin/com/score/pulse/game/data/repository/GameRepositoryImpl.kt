@@ -6,44 +6,64 @@ import com.score.pulse.core.domain.error.DataError
 import com.score.pulse.core.domain.error.EmptyResult
 import com.score.pulse.core.domain.error.asEmptyDataResult
 import com.score.pulse.game.data.local.dao.GameDao
-import com.score.pulse.game.data.local.dao.PlayerGameDao
+import com.score.pulse.game.data.local.dao.HistoryDao
+import com.score.pulse.game.data.local.dao.PlayerDao
+import com.score.pulse.game.data.local.entity.MatchHistoryEntity
+import com.score.pulse.game.data.mapper.toActiveEntity
 import com.score.pulse.game.data.mapper.toDomain
-import com.score.pulse.game.data.mapper.toEntity
+import com.score.pulse.game.data.mapper.toSnapshotString
 import com.score.pulse.game.domain.model.Game
+import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.repository.GameRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
 
 class GameRepositoryImpl(
     private val gameDao: GameDao,
-    private val playerGameDao: PlayerGameDao
+    private val playerDao: PlayerDao,
+    private val historyDao: HistoryDao
 ) : GameRepository {
-    override suspend fun getAllGames(): AppResult<List<Game>, DataError> {
-        return safeDbCall {
-            gameDao.getAllGames().toDomain()
-        }
-    }
-
-    override suspend fun startNewActiveGame(game: Game): EmptyResult<DataError> {
-        return safeDbCall {
-            gameDao.startNewActiveGame(game.toEntity())
-        }.asEmptyDataResult()
-    }
 
     override fun observeActiveGame(): Flow<Game?> {
         return gameDao.observeActiveGame().map { it?.toDomain() }
     }
 
-    override suspend fun completeActiveGame(): EmptyResult<DataError> {
+    override suspend fun getActiveGame(): AppResult<Game?, DataError> {
         return safeDbCall {
-            gameDao.completeActiveGame()
+            gameDao.getActiveGame()?.toDomain()
+        }
+    }
+
+    override suspend fun startNewActiveGame(game: Game): EmptyResult<DataError> {
+        return safeDbCall {
+            playerDao.resetScores()
+            gameDao.upsertActiveGame(game.toActiveEntity())
+        }.asEmptyDataResult()
+    }
+
+    override suspend fun completeActiveGame(
+        players: List<Player>,
+        durationMinutes: Int,
+        gameName: String
+    ): EmptyResult<DataError> {
+        return safeDbCall {
+            val matchHistory = MatchHistoryEntity(
+                title = gameName,
+                durationMinutes = durationMinutes,
+                createdAt = Clock.System.now().toEpochMilliseconds(),
+                participantsSnapshot = players.toSnapshotString()
+            )
+            historyDao.upsertMatchHistory(matchHistory)
+            gameDao.clearActiveGame()
+            playerDao.resetScores()
         }.asEmptyDataResult()
     }
 
     override suspend fun lockRound(resetScores: Boolean): EmptyResult<DataError> {
         return safeDbCall {
             if (resetScores) {
-                playerGameDao.resetScoresForActiveGame()
+                playerDao.resetScores()
             }
             gameDao.lockRound()
         }.asEmptyDataResult()

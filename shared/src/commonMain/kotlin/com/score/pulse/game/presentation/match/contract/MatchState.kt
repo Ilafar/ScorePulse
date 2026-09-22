@@ -2,7 +2,6 @@ package com.score.pulse.game.presentation.match.contract
 
 import com.score.pulse.core.base.UiState
 import com.score.pulse.game.domain.model.Game
-import com.score.pulse.game.domain.model.GameStatus
 import com.score.pulse.game.domain.model.Player
 
 data class MatchState(
@@ -21,7 +20,7 @@ data class MatchState(
 }
 
 private fun Game?.isStarted(): Boolean =
-    this != null && status == GameStatus.IN_PROGRESS
+    this != null
 
 private fun Game?.isFinalRound(): Boolean =
     this != null && maxRounds > 0 && currentRound >= maxRounds

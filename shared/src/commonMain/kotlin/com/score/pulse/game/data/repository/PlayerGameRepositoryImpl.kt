@@ -4,7 +4,7 @@ import com.score.pulse.core.data.local.safeDbCall
 import com.score.pulse.core.domain.error.DataError
 import com.score.pulse.core.domain.error.EmptyResult
 import com.score.pulse.core.domain.error.asEmptyDataResult
-import com.score.pulse.game.data.local.dao.PlayerGameDao
+import com.score.pulse.game.data.local.dao.PlayerDao
 import com.score.pulse.game.data.mapper.toDomain
 import com.score.pulse.game.domain.model.Player
 import com.score.pulse.game.domain.repository.PlayerGameRepository
@@ -12,18 +12,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class PlayerGameRepositoryImpl(
-    private val playerGameDao: PlayerGameDao
+    private val playerDao: PlayerDao
 ) : PlayerGameRepository {
     override fun observePlayersForActiveGame(): Flow<List<Player>> =
-        playerGameDao.observePlayersForActiveGame()
-            .map { entities -> entities.map { it.toDomain() } }
+        playerDao.observeAll().map { entities -> entities.toDomain() }
 
     override suspend fun adjustPlayerScore(
         playerId: Int,
         delta: Int
     ): EmptyResult<DataError> {
         return safeDbCall {
-            playerGameDao.adjustPlayerScore(playerId, delta)
+            playerDao.adjustScore(playerId, delta)
         }.asEmptyDataResult()
     }
 
@@ -31,7 +30,7 @@ class PlayerGameRepositoryImpl(
         playerId: Int,
     ): EmptyResult<DataError> {
         return safeDbCall {
-            playerGameDao.addPlayerWin(playerId)
+            playerDao.addWin(playerId)
         }.asEmptyDataResult()
     }
 
@@ -39,7 +38,7 @@ class PlayerGameRepositoryImpl(
         playerId: Int,
     ): EmptyResult<DataError> {
         return safeDbCall {
-            playerGameDao.addPlayerLose(playerId)
+            playerDao.addLoss(playerId)
         }.asEmptyDataResult()
     }
 }

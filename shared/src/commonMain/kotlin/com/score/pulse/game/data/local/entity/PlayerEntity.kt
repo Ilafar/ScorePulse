@@ -9,4 +9,8 @@ data class PlayerEntity(
     val name: String,
     val emblem: String,
     val accent: String,
+    val score: Int = 0,
+    val wins: Int = 0,
+    val losses: Int = 0,
+    val rank: Int = 0,
 )

@@ -32,6 +32,7 @@ import com.score.pulse.game.presentation.match.contract.MatchEvent
 import com.score.pulse.game.presentation.match.contract.MatchState
 import com.score.pulse.game.presentation.match.viewmodel.MatchViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
 
 @Composable
 fun MatchRoot(
@@ -145,7 +146,7 @@ private fun MatchScreen(
                         id = "m1",
                         title = state.game?.name.orEmpty(),
                         durationMinutes = 42,
-                        dateLabel = "Today, 8:45 PM",
+                        createdAt = Clock.System.now().toEpochMilliseconds(),
                         participants = state.players
                     )
                 )

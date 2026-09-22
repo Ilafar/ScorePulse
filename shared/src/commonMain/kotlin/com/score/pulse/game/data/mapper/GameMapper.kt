@@ -1,34 +1,46 @@
 package com.score.pulse.game.data.mapper
 
-import com.score.pulse.game.data.local.entity.GameEntity
+import com.score.pulse.game.data.local.entity.ActiveGameEntity
+import com.score.pulse.game.data.local.entity.MatchHistoryEntity
 import com.score.pulse.game.domain.model.Game
+import com.score.pulse.game.domain.model.MatchRecord
 
-fun Game.toEntity(): GameEntity {
-    return GameEntity(
-        id = id,
-        name = name,
-        currentRound = currentRound,
-        maxRounds = maxRounds,
-        status = status,
-        createdAt = createdAt
-    )
-}
-
-fun GameEntity.toDomain(): Game {
+fun ActiveGameEntity.toDomain(): Game {
     return Game(
         id = id,
         name = name,
         currentRound = currentRound,
         maxRounds = maxRounds,
-        status = status,
         createdAt = createdAt
     )
 }
 
-fun List<GameEntity>.toDomain(): List<Game> {
-    return map { it.toDomain() }
+fun Game.toActiveEntity(): ActiveGameEntity {
+    return ActiveGameEntity(
+        id = 1,
+        name = name,
+        currentRound = currentRound,
+        maxRounds = maxRounds,
+        createdAt = createdAt
+    )
 }
 
-fun List<Game>.toEntity(): List<GameEntity> {
-    return map { it.toEntity() }
+fun MatchHistoryEntity.toDomain(): MatchRecord {
+    return MatchRecord(
+        id = id.toString(),
+        title = title,
+        durationMinutes = durationMinutes,
+        createdAt = createdAt,
+        participants = participantsSnapshot.toPlayerList()
+    )
+}
+
+fun MatchRecord.toHistoryEntity(): MatchHistoryEntity {
+    return MatchHistoryEntity(
+        id = id.toIntOrNull() ?: 0,
+        title = title,
+        durationMinutes = durationMinutes,
+        createdAt = createdAt,
+        participantsSnapshot = participants.toSnapshotString()
+    )
 }
